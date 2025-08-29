@@ -1,11 +1,19 @@
-<!DOCTYPE html><html lang='de'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><title>Kontakt – Nexentra</title><link rel='stylesheet' href='styles.css'></head><body>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kontakt – Nexentra</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
 <header class="header">
   <div class="container nav">
     <nav id="menu" class="menu">
-      <a href="index.html" >Start</a>
-      <a href="leistungen.html" >Leistungen</a>
+      <a href="index.html">Start</a>
+      <a href="leistungen.html">Leistungen</a>
       <a href="kontakt.html" style="font-weight:700">Kontakt</a>
-      <a href="datenschutz.html" >Datenschutz</a>
+      <a href="datenschutz.html">Datenschutz</a>
       <a class="cta" href="kontakt.html">Anfrage starten</a>
     </nav>
     <button class="burger" onclick="toggleMenu()">☰</button>
@@ -15,28 +23,33 @@
 <section class="hero">
   <img src="assets/logo.png" alt="Nexentra Logo" class="biglogo">
   <h1>Kontakt</h1>
+
   <div class="container">
-<p class="p">Stellen Sie uns Ihre Anfrage – wir melden uns zeitnah zurück.</p>
-<form class="card" method="post" action="mailto:info@nexentra.de" enctype="text/plain">
-  <label>Name<br><input class="input" name="name" required></label><br><br>
-  <label>E-Mail<br><input class="input" type="email" name="email" required></label><br><br>
-  <label>Telefon<br><input class="input" type="tel" name="telefon"></label><br><br>
-  <label>Nachricht<br><textarea class="input" rows="6" name="nachricht"></textarea></label><br>
-  <button class="cta" type="submit">Senden</button>
-</form>
+    <p class="p">Stellen Sie uns Ihre Anfrage – wir melden uns zeitnah zurück.</p>
 
-<p class="p">
-  Oder direkt per Mail: <a href="mailto:info@nexentra.de">nexentra@gmx.de</a><br>
-  Mobil: <a href="tel:+491638920004">+49 (0)163/8920004</a><br>
-  Festnetz: <a href="tel:+49230630984604">+49 (0)2306/309 846 04</a>
-</p>
+    <!-- Mailto-Formulare sind unzuverlässig; optional unten Formspree-Variante -->
+    <form class="card" method="get" action="mailto:info@nexentra.de">
+      <label>Name<br><input class="input" name="name" required></label><br><br>
+      <label>E-Mail<br><input class="input" type="email" name="email" required></label><br><br>
+      <label>Telefon<br><input class="input" type="tel" name="telefon"></label><br><br>
+      <label>Nachricht<br><textarea class="input" rows="6" name="nachricht"></textarea></label><br>
+      <button class="cta" type="submit">Senden</button>
+    </form>
 
-<div class="card">
-  <h2>Adresse</h2>
-  <p class="p">Otto-Klug-Weg 10<br>44536 Lünen</p>
-  <h2>Verfügbarkeit</h2>
-  <p class="p">Mo–Fr · 08–18 Uhr</p>
-</div>
+    <p class="p">
+      Oder direkt per Mail:
+      <a href="mailto:info@nexentra.de">info@nexentra.de</a><br>
+      Mobil: <a href="tel:+491638920004">+49 (0)163 / 892 0004</a><br>
+      Festnetz: <a href="tel:+49230630984604">+49 (0)2306 / 309 846 04</a>
+    </p>
+
+    <div class="card">
+      <h2>Adresse</h2>
+      <p class="p">Otto-Klug-Weg 10<br>44536 Lünen</p>
+      <h2>Verfügbarkeit</h2>
+      <p class="p">Mo–Fr · 08–18 Uhr</p>
+    </div>
+  </div> <!-- <<< fehlendes Container-Close ergänzt -->
 </section>
 
 <footer>
@@ -47,5 +60,7 @@
     </div>
   </div>
 </footer>
+
 <script src="app.js"></script>
-</body></html>
+</body>
+</html>
