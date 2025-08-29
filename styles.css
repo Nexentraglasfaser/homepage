@@ -54,12 +54,15 @@ footer{border-top:1px solid var(--border);margin-top:24px;background:#ffffff}
 @media (max-width:900px){
   .grid-3,.grid-2{grid-template-columns:1fr}
 
-  .menu{
-    display:flex;             /* Menü immer sichtbar */
-    flex-direction:column;    /* untereinander */
-    gap:12px;                 /* Abstand zwischen Links */
-    align-items:center;       /* optional: mittig */
+  .menu {
+    display: flex;
+    flex-direction: row;      /* nebeneinander */
+    flex-wrap: nowrap;        /* kein Umbruch */
+    gap: 12px;                /* Abstand zwischen den Links */
+    align-items: center;      /* vertikal mittig */
+    justify-content: center;  /* horizontal mittig */
   }
+}
 
   .burger{
     display:none;             /* Burger auf Handy ausblenden */
