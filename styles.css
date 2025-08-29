@@ -1,8 +1,8 @@
 
 :root{
-  --bg1:#1b3d7a;     /* lighter blue */
-  --bg2:#0d2855;     /* deeper mid blue */
-  --header:#0a2147;  /* header gradient start */
+  --bg1:#ffffff;     /* lighter blue */
+  --bg2:#ffffff;     /* deeper mid blue */
+  --header:#ffffff;  /* header gradient start */
   --fg:#eaf2ff;
   --muted:#b7c4da;
   --accent:#00c2c7;
