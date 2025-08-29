@@ -50,14 +50,35 @@ footer{border-top:1px solid var(--border);margin-top:24px;background:#ffffff}
 .footer-inner{display:flex;justify-content:space-between;flex-wrap:wrap;padding:12px 20px;color:#6b879e;font-size:14px}
 .footer-links a{font-size:12px;color:#6b879e;border:1px solid var(--border);padding:6px 10px;border-radius:999px}
 
+
 @media (max-width:900px){
   .grid-3,.grid-2{grid-template-columns:1fr}
-  .menu{display:none}
-  .menu.open{display:flex; flex-direction:column; gap:12px}
-  .burger{display:block}
+
+  .menu{
+    display:flex;             /* Menü immer sichtbar */
+    flex-direction:column;    /* untereinander */
+    gap:12px;                 /* Abstand zwischen Links */
+    align-items:center;       /* optional: mittig */
+  }
+
+  .burger{
+    display:none;             /* Burger auf Handy ausblenden */
+  }
 }
-@media (min-width:901px){.burger{display:none}}
-.burger{background:#f0f6fc;border:1px solid var(--border);padding:8px 10px;border-radius:10px}
+
+@media (min-width:901px){
+  .burger{
+    display:none;             /* Burger auch auf Desktop ausgeblendet */
+  }
+}
+
+.burger{
+  background:#f0f6fc;
+  border:1px solid var(--border);
+  padding:8px 10px;
+  border-radius:10px;
+}
+
 input, textarea {
   width: 100%;          /* Eingabefeld nimmt gesamte Container-Breite */
   max-width: 600px;     /* optional Begrenzung, damit es nicht übertrieben breit wird */
