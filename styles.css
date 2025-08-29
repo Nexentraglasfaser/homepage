@@ -23,7 +23,7 @@ a:hover{text-decoration:underline}
 .cta:hover{text-decoration:none; box-shadow:0 0 0 6px rgba(10,106,161,.12)}
 
 /* Hero with reduced spacing and big logo */
-.hero{padding:16px 0 12px;text-align:center}
+.hero{padding:4px 0 4px;text-align:center}
 .hero img.biglogo{max-width:300px;width:100%;margin:8px auto 10px auto}
 .card{background:#f6faff;border:1px solid var(--border);border-radius:16px;padding:16px;margin-top:12px}
 h1{font-size:clamp(28px,4vw,42px);margin:0 0 8px}
