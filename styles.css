@@ -87,3 +87,21 @@ input, textarea {
   padding: 10px;
   font-size: 16px;
 }
+
+.hero {
+  padding: 0;                 /* kein extra Abstand oben/unten */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;                   /* Abstand zwischen Logo und Überschrift */
+  text-align: center;
+}
+
+.hero img.biglogo {
+  max-width: 280px;
+  margin: 0;                  /* kein Abstand um das Logo */
+}
+
+.hero h1 {
+  margin: 4px 0;              /* Überschrift mit minimalem Abstand */
+}
