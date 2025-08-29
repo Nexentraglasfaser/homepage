@@ -25,17 +25,17 @@ a:hover{text-decoration:underline}
 /* Hero with reduced spacing and big logo */
 /* Hero super kompakt + kontrollierter Abstand */
 .hero{
-  padding: 4px 0;                /* vorher größer */
+  padding: 0px 0;                /* vorher größer */
   display: flex;                  /* verhindert „mysteriöse“ Abstände */
   flex-direction: column;
   align-items: center;
-  gap: 6px;                       /* Abstand zwischen Logo und H1 */
+  gap: 4px;                       /* Abstand zwischen Logo und H1 */
   text-align: center;
 }
 
 .hero img.biglogo{
-  max-width: 300px;
-  width: 100%;
+  max-width: 450px;
+  width: 150%;
   margin: 0;                      /* kein Extra-Abstand oben/unten */
 }
 .card{background:#f6faff;border:1px solid var(--border);border-radius:16px;padding:16px;margin-top:12px}
