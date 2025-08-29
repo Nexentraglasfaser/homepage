@@ -27,12 +27,15 @@
   <div class="container">
     <p class="p">Stellen Sie uns Ihre Anfrage – wir melden uns zeitnah zurück.</p>
 
-    <!-- Mailto-Formulare sind unzuverlässig; optional unten Formspree-Variante -->
-    <form class="card" method="get" action="mailto:info@nexentra.de">
+    <!-- PHP-Formular -->
+    <form class="card" method="post" action="https://form.nexentra.de/contact.php">
+      <!-- Honeypot gegen Spam (unsichtbares Feld) -->
+      <input type="text" name="company" style="display:none">
+
       <label>Name<br><input class="input" name="name" required></label><br><br>
       <label>E-Mail<br><input class="input" type="email" name="email" required></label><br><br>
       <label>Telefon<br><input class="input" type="tel" name="telefon"></label><br><br>
-      <label>Nachricht<br><textarea class="input" rows="6" name="nachricht"></textarea></label><br>
+      <label>Nachricht<br><textarea class="input" rows="6" name="nachricht" required></textarea></label><br>
       <button class="cta" type="submit">Senden</button>
     </form>
 
@@ -49,7 +52,7 @@
       <h2>Verfügbarkeit</h2>
       <p class="p">Mo–Fr · 08–18 Uhr</p>
     </div>
-  </div> <!-- <<< fehlendes Container-Close ergänzt -->
+  </div>
 </section>
 
 <footer>
