@@ -98,7 +98,7 @@ input, textarea {
 }
 
 .hero img.biglogo {
-  max-width: 280px;
+  max-width: 350px;
   margin: 0;                  /* kein Abstand um das Logo */
 }
 
