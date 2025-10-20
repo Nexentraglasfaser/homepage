@@ -69,15 +69,18 @@
       </div>
 
       <!-- Projektangaben -->
-      <fieldset class="field">
-        <legend>Projektart (Mehrfachauswahl)*</legend>
-        <label class="checkbox"><input type="checkbox" name="projektart[]" value="Einblasen NE3/NE4" required> Einblasen (NE3/NE4)</label>
-        <label class="checkbox"><input type="checkbox" name="projektart[]" value="Spleissen"> Spleißen</label>
-        <label class="checkbox"><input type="checkbox" name="projektart[]" value="NVT/GVT"> NVT/GVT-Arbeiten</label>
-        <label class="checkbox"><input type="checkbox" name="projektart[]" value="OTDR/Messung"> OTDR-/Dämpfungsmessungen</label>
-        <label class="checkbox"><input type="checkbox" name="projektart[]" value="Entstoerung/Restmeter"> Entstörung/Restmeter</label>
-        <label class="checkbox"><input type="checkbox" name="projektart[]" value="Sonstiges"> Sonstiges</label>
-      </fieldset>
+     <fieldset class="field">
+  <legend>Projektart (Mehrfachauswahl)*</legend>
+  <div class="checkbox-grid">
+    <label class="checkbox"><input type="checkbox" name="projektart[]" value="Einblasen NE3/NE4" required> Einblasen (NE3/NE4)</label>
+    <label class="checkbox"><input type="checkbox" name="projektart[]" value="Spleissen"> Spleißen</label>
+    <label class="checkbox"><input type="checkbox" name="projektart[]" value="NVT/GVT"> NVT/GVT-Arbeiten</label>
+    <label class="checkbox"><input type="checkbox" name="projektart[]" value="OTDR/Messung"> OTDR-/Dämpfungsmessungen</label>
+    <label class="checkbox"><input type="checkbox" name="projektart[]" value="Entstoerung/Restmeter"> Entstörung/Restmeter</label>
+    <label class="checkbox"><input type="checkbox" name="projektart[]" value="Sonstiges"> Sonstiges</label>
+  </div>
+</fieldset>
+
 
       <div class="field">
         <label for="beschreibung">Kurzbeschreibung / Scope*</label>
@@ -118,12 +121,13 @@
         <small class="help">Falls Upload nicht möglich: Bitte per E-Mail an info@nexentra.de senden.</small>
       </div>
 
-      <div class="field">
-        <label class="checkbox">
-          <input type="checkbox" name="privacy" required>
-          Ich habe die <a href="datenschutz.html" target="_blank" rel="noopener">Datenschutzhinweise</a> gelesen und stimme der Verarbeitung zu.*
-        </label>
-      </div>
+<div class="field privacy-row">
+  <input type="checkbox" id="privacy" name="privacy" required>
+  <label for="privacy">
+    Ich habe die <a href="datenschutz.html" target="_blank" rel="noopener">Datenschutzhinweise</a> gelesen und stimme der Verarbeitung zu.*
+  </label>
+</div>
+
 
       <div class="center" style="margin-top:1.5rem;">
         <button type="submit" class="cta">Anfrage senden</button>
