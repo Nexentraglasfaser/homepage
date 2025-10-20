@@ -108,3 +108,24 @@ input, textarea {
 .hero h1 {
   margin: 4px 0;              /* Überschrift mit minimalem Abstand */
 }
+
+/* --- Kontaktformular Erweiterungen --- */
+.field { 
+  margin-bottom: 1rem; 
+}
+
+.checkbox { 
+  display: block; 
+  margin-bottom: .4rem; 
+}
+
+.help { 
+  display: block; 
+  font-size: .85em; 
+  opacity: .8; 
+  margin-top: .25rem; 
+}
+
+select[multiple] { 
+  min-height: 120px; 
+}
