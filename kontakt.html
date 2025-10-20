@@ -26,83 +26,89 @@
   <img src="assets/logo.png" alt="Nexentra Logo" class="biglogo">
   <h1>Kontakt & Projektanfrage</h1>
   <div class="container">
-    <p class="p">Füllen Sie das Formular aus – wir melden uns in der Regel innerhalb von 24 Stunden.</p>
+    <p class="p">
+      Sie möchten ein Glasfaserprojekt anfragen oder eine mögliche Zusammenarbeit besprechen?  
+      Füllen Sie einfach das Formular aus – wir melden uns in der Regel innerhalb von 24 Stunden.
+    </p>
   </div>
 </section>
 
 <section>
   <div class="container">
-    <!-- WICHTIG: Ersetze den Action-URL-Wert durch deinen echten Formspree-Endpoint -->
-    <form id="contact-form" action="https://formspree.io/f/REPLACE_WITH_YOUR_ENDPOINT" method="POST" class="form" enctype="multipart/form-data">
-      <input type="hidden" name="_subject" value="Neue Projektanfrage über nexentra.de">
-      <input type="hidden" name="_redirect" value="https://nexentra.de/danke.html">
+    <!-- ✅ Formular sendet direkt an info@nexentra.de -->
+    <form action="https://formsubmit.co/info@nexentra.de" method="POST" class="form">
+      <!-- FormSubmit-Optionen -->
+      <input type="hidden" name="_next" value="https://nexentra.de/danke.html">
+      <input type="hidden" name="_subject" value="Nexentra – Neue Projektanfrage">
+      <input type="hidden" name="_captcha" value="false">
+      <input type="hidden" name="_template" value="table">
 
-      <!-- Honeypot (Spam-Schutz) -->
+      <!-- Spam-Schutz -->
       <div style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;">
         <label>Firma (leer lassen)</label>
-        <input type="text" name="company">
+        <input type="text" name="_honey">
       </div>
 
       <!-- Kontaktdaten -->
       <div class="grid grid-2">
         <div class="field">
           <label for="name">Ihr Name*</label>
-          <input id="name" name="name" type="text" required placeholder="Vor- und Nachname">
+          <input id="name" name="Name" type="text" required placeholder="Vor- und Nachname">
         </div>
         <div class="field">
           <label for="firma">Unternehmen</label>
-          <input id="firma" name="firma" type="text" placeholder="Firma (optional)">
+          <input id="firma" name="Firma" type="text" placeholder="Firma (optional)">
         </div>
       </div>
 
       <div class="grid grid-2">
         <div class="field">
           <label for="email">E-Mail*</label>
-          <input id="email" name="email" type="email" required placeholder="name@firma.de">
+          <input id="email" name="E-Mail" type="email" required placeholder="name@firma.de">
         </div>
         <div class="field">
           <label for="telefon">Telefon</label>
-          <input id="telefon" name="telefon" type="tel" placeholder="+49 …">
+          <input id="telefon" name="Telefon" type="tel" placeholder="+49 …">
         </div>
       </div>
 
-      <!-- Projektarten (frei wählbar, NICHT Pflicht) -->
+      <!-- Projektarten -->
       <fieldset class="field">
         <legend>Projektart (Mehrfachauswahl)</legend>
         <div class="checkbox-grid">
-          <label class="checkbox"><input type="checkbox" name="projektart[]" value="Einblasen NE3/NE4"> Einblasen (NE3/NE4)</label>
-          <label class="checkbox"><input type="checkbox" name="projektart[]" value="Spleissen"> Spleißen</label>
-          <label class="checkbox"><input type="checkbox" name="projektart[]" value="NVT/GVT"> NVT/GVT-Arbeiten</label>
-          <label class="checkbox"><input type="checkbox" name="projektart[]" value="OTDR/Messung"> OTDR-/Dämpfungsmessungen</label>
-          <label class="checkbox"><input type="checkbox" name="projektart[]" value="Entstoerung/Restmeter"> Entstörung/Restmeter</label>
-          <label class="checkbox"><input type="checkbox" name="projektart[]" value="Sonstiges"> Sonstiges</label>
+          <label class="checkbox"><input type="checkbox" name="Projektart[]" value="Einblasen NE3/NE4"> Einblasen (NE3/NE4)</label>
+          <label class="checkbox"><input type="checkbox" name="Projektart[]" value="Spleissen"> Spleißen</label>
+          <label class="checkbox"><input type="checkbox" name="Projektart[]" value="NVT/GVT"> NVT/GVT-Arbeiten</label>
+          <label class="checkbox"><input type="checkbox" name="Projektart[]" value="OTDR/Messung"> OTDR-/Dämpfungsmessungen</label>
+          <label class="checkbox"><input type="checkbox" name="Projektart[]" value="Entstoerung/Restmeter"> Entstörung/Restmeter</label>
+          <label class="checkbox"><input type="checkbox" name="Projektart[]" value="Sonstiges"> Sonstiges</label>
         </div>
       </fieldset>
 
       <div class="field">
         <label for="beschreibung">Kurzbeschreibung / Scope*</label>
-        <textarea id="beschreibung" name="beschreibung" rows="5" required placeholder="Was ist zu tun? Besonderheiten, Meilensteine, Schnittstellen…"></textarea>
+        <textarea id="beschreibung" name="Kurzbeschreibung" rows="5" required placeholder="Was ist zu tun? Besonderheiten, Meilensteine, Schnittstellen…"></textarea>
       </div>
 
       <div class="grid grid-2">
         <div class="field">
           <label for="region">Einsatzgebiet / Region</label>
-          <input id="region" name="region" type="text" placeholder="z. B. NRW, Niedersachsen, bundesweit – frei eintragen">
+          <input id="region" name="Region" type="text" placeholder="z. B. NRW, Niedersachsen, bundesweit">
         </div>
         <div class="field">
           <label for="volumen">Volumen / Größenordnung</label>
-          <input id="volumen" name="volumen" type="text" placeholder="z. B. 800 WE / 20 km Trasse">
+          <input id="volumen" name="Volumen" type="text" placeholder="z. B. 800 WE / 20 km Trasse">
         </div>
       </div>
 
       <div class="grid grid-2">
         <div class="field">
           <label for="start">Geplanter Start</label>
-          <input id="start" name="start" type="date">
+          <input id="start" name="Start" type="date">
         </div>
         <div class="field">
           <label for="zeitfenster">Zeitfenster</label>
-          <select id="zeitfenster" name="zeitfenster">
+          <select id="zeitfenster" name="Zeitfenster">
             <option value="">Bitte wählen…</option>
             <option>Sofort</option>
             <option>In 2–4 Wochen</option>
@@ -112,16 +118,14 @@
         </div>
       </div>
 
-      <!-- Datei-Upload optional (nur wenn Formspree-Plan das unterstützt) -->
       <div class="field">
-        <label for="anlage">Anhang (LV/Pläne, optional)</label>
-        <input id="anlage" name="anlage" type="file" accept=".pdf,.doc,.docx,.xlsx,.xls,.zip,.png,.jpg">
-        <small class="help">Falls Upload nicht möglich: Bitte per E-Mail an <a href="mailto:info@nexentra.de">info@nexentra.de</a> senden.</small>
+        <label for="anlage">Anhang (LV / Pläne, optional)</label>
+        <input id="anlage" name="Anhang" type="file" accept=".pdf,.doc,.docx,.xlsx,.xls,.zip,.png,.jpg">
+        <small class="help">Falls Upload nicht möglich: bitte per E-Mail an <a href="mailto:info@nexentra.de">info@nexentra.de</a> senden.</small>
       </div>
 
-      <!-- Datenschutz (Pflicht) -->
       <div class="field privacy-row">
-        <input type="checkbox" id="privacy" name="privacy" required>
+        <input type="checkbox" id="privacy" name="Datenschutz" required>
         <label for="privacy">
           Ich habe die <a href="datenschutz.html" target="_blank" rel="noopener">Datenschutzhinweise</a> gelesen und stimme der Verarbeitung zu.*
         </label>
@@ -142,20 +146,6 @@
     </div>
   </div>
 </footer>
-
-<script>
-  // Minimaler Frontend-Check: warnen, wenn der Endpoint nicht gesetzt wurde
-  (function(){
-    const form = document.getElementById('contact-form');
-    if (form && form.action.includes('REPLACE_WITH_YOUR_ENDPOINT')) {
-      console.warn('Formspree-Endpoint fehlt. Bitte action= auf deine echte URL setzen.');
-      form.addEventListener('submit', function(e){
-        e.preventDefault();
-        alert('Hinweis: Bitte in kontakt.html den Formspree-Endpoint ersetzen (action="https://formspree.io/f/…").');
-      });
-    }
-  })();
-</script>
 
 <script src="app.js"></script>
 </body>
