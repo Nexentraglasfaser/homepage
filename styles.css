@@ -243,3 +243,57 @@ footer {
   /* Burger auf Desktop ausblenden (falls in HTML vorhanden) */
   .burger { display: none; }
 }
+
+
+/* --- Fieldset/Legend und Checkbox-Layout --- */
+fieldset.field {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 14px 10px;
+}
+
+fieldset.field legend {
+  padding: 0 6px;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;   /* 2 Spalten, passt sich an */
+  gap: 8px 16px;
+  margin-top: 8px;
+}
+
+@media (max-width: 700px) {
+  .checkbox-grid { grid-template-columns: 1fr; } /* mobil einspaltig */
+}
+
+.checkbox label,
+label.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-weight: 500;
+}
+
+.checkbox input[type="checkbox"],
+label.checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+}
+
+/* --- Datenschutzzeile sauber ausrichten --- */
+.privacy-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.privacy-row input[type="checkbox"] {
+  margin-top: 3px; /* visuelle Zentrierung zur Textzeile */
+}
+
+.privacy-row a { text-decoration: underline; }
