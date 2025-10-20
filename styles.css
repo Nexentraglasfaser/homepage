@@ -129,3 +129,81 @@ input, textarea {
 select[multiple] { 
   min-height: 120px; 
 }
+
+
+/* --- Nexentra Kontaktformular Layout --- */
+form {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+.field {
+  margin-bottom: 1rem;
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: .4rem;
+  color: #1a1a1a;
+}
+
+input[type=text],
+input[type=email],
+input[type=tel],
+input[type=date],
+input[type=file],
+select,
+textarea {
+  width: 100%;
+  padding: .6rem .8rem;
+  border: 1px solid #cfd8dc;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+textarea { resize: vertical; min-height: 100px; }
+
+.checkbox { 
+  display: block; 
+  margin-bottom: .4rem;
+}
+
+.grid {
+  display: grid;
+  gap: 1rem;
+}
+.grid-2 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+.grid-3 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+
+button.cta, 
+.cta[type=submit],
+button[type=submit] {
+  display: inline-block;
+  background: #19b4c6;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: .8rem 1.4rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background .2s ease;
+}
+button.cta:hover, 
+.cta[type=submit]:hover {
+  background: #1599aa;
+}
+
+.help {
+  display: block;
+  font-size: .85em;
+  opacity: .8;
+  margin-top: .25rem;
+}
