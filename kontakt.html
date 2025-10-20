@@ -1,0 +1,94 @@
+<form action="https://formspree.io/f/YOUR_FORMSPREE_ENDPOINT" method="POST" class="form">
+  <input type="hidden" name="_subject" value="Neue Projektanfrage über nexentra.de">
+  <input type="hidden" name="_redirect" value="https://nexentra.de/danke.html">
+
+  <!-- Anti-Spam Honeypot -->
+  <div style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;">
+    <label>Firma (leer lassen)</label>
+    <input type="text" name="company">
+  </div>
+
+  <!-- Kontaktdaten -->
+  <div class="grid grid-2">
+    <div class="field">
+      <label for="name">Ihr Name*</label>
+      <input id="name" name="name" type="text" required placeholder="Vor- und Nachname">
+    </div>
+    <div class="field">
+      <label for="firma">Unternehmen</label>
+      <input id="firma" name="firma" type="text" placeholder="Firma (optional)">
+    </div>
+  </div>
+
+  <div class="grid grid-2">
+    <div class="field">
+      <label for="email">E-Mail*</label>
+      <input id="email" name="email" type="email" required placeholder="name@firma.de">
+    </div>
+    <div class="field">
+      <label for="telefon">Telefon</label>
+      <input id="telefon" name="telefon" type="tel" placeholder="+49 …">
+    </div>
+  </div>
+
+  <!-- Projektangaben -->
+  <fieldset class="field">
+    <legend>Projektart (Mehrfachauswahl)*</legend>
+    <label class="checkbox"><input type="checkbox" name="projektart[]" value="Einblasen NE3/NE4" required> Einblasen (NE3/NE4)</label>
+    <label class="checkbox"><input type="checkbox" name="projektart[]" value="Spleissen"> Spleißen</label>
+    <label class="checkbox"><input type="checkbox" name="projektart[]" value="NVT/GVT"> NVT/GVT-Arbeiten</label>
+    <label class="checkbox"><input type="checkbox" name="projektart[]" value="OTDR/Messung"> OTDR-/Dämpfungsmessungen</label>
+    <label class="checkbox"><input type="checkbox" name="projektart[]" value="Entstoerung/Restmeter"> Entstörung/Restmeter</label>
+    <label class="checkbox"><input type="checkbox" name="projektart[]" value="Sonstiges"> Sonstiges</label>
+  </fieldset>
+
+  <div class="field">
+    <label for="beschreibung">Kurzbeschreibung / Scope*</label>
+    <textarea id="beschreibung" name="beschreibung" rows="5" required placeholder="Was ist zu tun? Besonderheiten, Meilensteine, Schnittstellen…"></textarea>
+  </div>
+
+  <div class="grid grid-2">
+    <div class="field">
+      <label for="region">Einsatzgebiet / Region</label>
+      <input id="region" name="region" type="text" placeholder="z. B. NRW, Niedersachsen, bundesweit – frei eintragen">
+    </div>
+    <div class="field">
+      <label for="volumen">Volumen / Größenordnung</label>
+      <input id="volumen" name="volumen" type="text" placeholder="z. B. 800 WE / 20 km Trasse">
+    </div>
+  </div>
+
+  <div class="grid grid-2">
+    <div class="field">
+      <label for="start">Geplanter Start</label>
+      <input id="start" name="start" type="date">
+    </div>
+    <div class="field">
+      <label for="zeitfenster">Zeitfenster</label>
+      <select id="zeitfenster" name="zeitfenster">
+        <option value="">Bitte wählen…</option>
+        <option>Sofort</option>
+        <option>In 2–4 Wochen</option>
+        <option>In 4–8 Wochen</option>
+        <option>Nach Absprache</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="field">
+    <label for="anlage">Anhang (LV/Pläne, optional)</label>
+    <input id="anlage" name="anlage" type="file" accept=".pdf,.doc,.docx,.xlsx,.xls,.zip,.png,.jpg">
+    <small class="help">Falls Upload nicht möglich: Bitte per E-Mail an info@nexentra.de senden.</small>
+  </div>
+
+  <div class="field">
+    <label class="checkbox">
+      <input type="checkbox" name="privacy" required>
+      Ich habe die <a href="datenschutz.html" target="_blank" rel="noopener">Datenschutzhinweise</a> gelesen und stimme der Verarbeitung zu.*
+    </label>
+  </div>
+
+  <div class="center" style="margin-top:1rem;">
+    <button type="submit" class="cta">Anfrage senden</button>
+  </div>
+</form>
