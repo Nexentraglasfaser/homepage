@@ -1,0 +1,245 @@
+/* =========================
+   Nexentra – Global Styles
+   ========================= */
+
+/* Farben & Design-Variablen */
+:root {
+  --bg:        #e9f2ff;  /* Seitenhintergrund */
+  --fg:        #0b3a62;  /* Primärtext (dunkles Blau) */
+  --muted:     #456a8a;  /* Sekundärtext */
+  --accent:    #0a6aa1;  /* Blau für Links/Buttons */
+  --accent2:   #00c2c7;  /* Türkis für CTA */
+  --line:      #e5eef7;  /* zarte Linien/Felder */
+  --card:      #f6faff;  /* Kartenhintergrund */
+  --white:     #ffffff;
+  --shadow:    0 4px 20px rgba(0,0,0,.05);
+}
+
+/* Reset/Grundlayout */
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+img { max-width: 100%; height: auto; display: block; }
+a { color: var(--accent); text-decoration: none; }
+a:hover, a:focus { text-decoration: underline; }
+button { font-family: inherit; }
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 12px 20px;
+}
+
+/* =========================
+   Header / Navigation
+   ========================= */
+.header {
+  position: sticky;
+  top: 0; z-index: 50;
+  background: #ffffffee;
+  backdrop-filter: saturate(120%) blur(6px);
+  border-bottom: 1px solid var(--line);
+}
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+}
+.menu {
+  display: flex;
+  gap: 22px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.menu a {
+  color: var(--fg);
+  opacity: .9;
+  font-weight: 600;
+}
+.menu a:focus-visible { outline: 2px solid var(--accent2); outline-offset: 2px; }
+/* Aktiver Menüpunkt: entweder Klasse .active ODER inline style font-weight */
+.menu a.active,
+.menu a[style*="font-weight:700"] {
+  opacity: 1;
+}
+
+/* Burger (wird per JS getoggled) */
+.burger {
+  background: #f0f6fc;
+  border: 1px solid var(--line);
+  padding: 8px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.burger:focus-visible { outline: 2px solid var(--accent2); }
+
+/* =========================
+   Hero
+   ========================= */
+.hero {
+  padding: 0;                 /* kompakt */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+.hero img.biglogo {
+  max-width: 420px;           /* Logo-Größe Startseite */
+}
+.hero h1 {
+  font-size: clamp(28px, 4vw, 42px);
+  margin: 6px 0 8px;
+}
+.p {
+  color: var(--muted);
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+/* =========================
+   Grids & Cards
+   ========================= */
+.grid { display: grid; gap: 16px; }
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 16px;
+  margin-top: 12px;
+  box-shadow: var(--shadow);
+}
+
+h1 { font-size: clamp(28px, 4vw, 42px); margin: 0 0 8px; }
+h2 { font-size: clamp(22px, 2.5vw, 28px); margin: 20px 0 8px; }
+h3 { font-size: clamp(18px, 2vw, 22px); margin: 12px 0 6px; }
+
+/* =========================
+   Buttons / CTAs
+   ========================= */
+.cta,
+button.cta,
+.cta[type=submit],
+button[type=submit] {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--accent2), var(--accent));
+  color: #041018;
+  font-weight: 700;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid #d6e7f6;
+  transition: box-shadow .2s ease, transform .06s ease;
+}
+.cta:hover,
+button.cta:hover,
+.cta[type=submit]:hover,
+button[type=submit]:hover {
+  text-decoration: none;
+  box-shadow: 0 0 0 6px rgba(10,106,161,.12);
+}
+.cta:active,
+button.cta:active { transform: translateY(1px); }
+.cta:focus-visible { outline: 2px solid var(--accent2); outline-offset: 2px; }
+
+/* =========================
+   Formular-Layout
+   ========================= */
+form {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+}
+.field { margin-bottom: 1rem; }
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: .4rem;
+  color: #1a1a1a;
+}
+input[type=text],
+input[type=email],
+input[type=tel],
+input[type=date],
+input[type=file],
+select,
+textarea {
+  width: 100%;
+  padding: .6rem .8rem;
+  border: 1px solid #cfd8dc;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+  background: #fff;
+}
+textarea { resize: vertical; min-height: 110px; }
+.checkbox { display: block; margin-bottom: .4rem; }
+.help { display: block; font-size: .85em; opacity: .8; margin-top: .25rem; }
+select[multiple] { min-height: 120px; }
+
+/* =========================
+   Footer
+   ========================= */
+footer {
+  border-top: 1px solid var(--line);
+  margin-top: 24px;
+  background: var(--white);
+}
+.footer-inner {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: 12px 20px;
+  color: #6b879e;
+  font-size: 14px;
+}
+.footer-links a {
+  font-size: 12px;
+  color: #6b879e;
+  border: 1px solid var(--line);
+  padding: 6px 10px;
+  border-radius: 999px;
+}
+
+/* =========================
+   Utilities
+   ========================= */
+.center { text-align: center; }
+.hidden { display: none !important; }
+
+/* =========================
+   Responsive
+   ========================= */
+@media (max-width: 900px) {
+  .grid-3, .grid-2 { grid-template-columns: 1fr; }
+
+  /* Menü kompakt, weiterhin zentriert */
+  .menu {
+    gap: 12px;
+    justify-content: center;
+  }
+
+  /* Burger auf kleineren Screens sichtbar (falls genutzt) */
+  .burger { display: block; }
+
+  /* Logo im Hero etwas kleiner auf Mobil */
+  .hero img.biglogo { max-width: 320px; }
+}
+
+@media (min-width: 901px) {
+  /* Burger auf Desktop ausblenden (falls in HTML vorhanden) */
+  .burger { display: none; }
+}
