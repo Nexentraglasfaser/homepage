@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Kontakt – Nexentra</title>
-  <meta name="description" content="Kontaktieren Sie Nexentra für Glasfaserprojekte: Einblasen, Spleißen, Messtechnik, NVT/GVT-Arbeiten oder Entstörung. Wir beraten schnell und zuverlässig.">
+  <meta name="description" content="Kontakt für Glasfaserprojekte: Einblasen, Spleißen, Messtechnik, NVT/GVT oder Entstörung.">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -26,20 +26,18 @@
   <img src="assets/logo.png" alt="Nexentra Logo" class="biglogo">
   <h1>Kontakt & Projektanfrage</h1>
   <div class="container">
-    <p class="p">
-      Sie möchten ein Glasfaserprojekt besprechen oder eine Zusammenarbeit prüfen?
-      Füllen Sie einfach das Formular aus – wir melden uns in der Regel innerhalb von 24 Stunden.
-    </p>
+    <p class="p">Füllen Sie das Formular aus – wir melden uns in der Regel innerhalb von 24 Stunden.</p>
   </div>
 </section>
 
 <section>
   <div class="container">
-    <form action="https://formspree.io/f/YOUR_FORMSPREE_ENDPOINT" method="POST" class="form">
+    <!-- WICHTIG: Ersetze den Action-URL-Wert durch deinen echten Formspree-Endpoint -->
+    <form id="contact-form" action="https://formspree.io/f/REPLACE_WITH_YOUR_ENDPOINT" method="POST" class="form" enctype="multipart/form-data">
       <input type="hidden" name="_subject" value="Neue Projektanfrage über nexentra.de">
       <input type="hidden" name="_redirect" value="https://nexentra.de/danke.html">
 
-      <!-- Anti-Spam Honeypot -->
+      <!-- Honeypot (Spam-Schutz) -->
       <div style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;">
         <label>Firma (leer lassen)</label>
         <input type="text" name="company">
@@ -68,19 +66,18 @@
         </div>
       </div>
 
-      <!-- Projektangaben -->
-     <fieldset class="field">
-  <legend>Projektart (Mehrfachauswahl)*</legend>
-  <div class="checkbox-grid">
-    <label class="checkbox"><input type="checkbox" name="projektart[]" value="Einblasen NE3/NE4" required> Einblasen (NE3/NE4)</label>
-    <label class="checkbox"><input type="checkbox" name="projektart[]" value="Spleissen"> Spleißen</label>
-    <label class="checkbox"><input type="checkbox" name="projektart[]" value="NVT/GVT"> NVT/GVT-Arbeiten</label>
-    <label class="checkbox"><input type="checkbox" name="projektart[]" value="OTDR/Messung"> OTDR-/Dämpfungsmessungen</label>
-    <label class="checkbox"><input type="checkbox" name="projektart[]" value="Entstoerung/Restmeter"> Entstörung/Restmeter</label>
-    <label class="checkbox"><input type="checkbox" name="projektart[]" value="Sonstiges"> Sonstiges</label>
-  </div>
-</fieldset>
-
+      <!-- Projektarten (frei wählbar, NICHT Pflicht) -->
+      <fieldset class="field">
+        <legend>Projektart (Mehrfachauswahl)</legend>
+        <div class="checkbox-grid">
+          <label class="checkbox"><input type="checkbox" name="projektart[]" value="Einblasen NE3/NE4"> Einblasen (NE3/NE4)</label>
+          <label class="checkbox"><input type="checkbox" name="projektart[]" value="Spleissen"> Spleißen</label>
+          <label class="checkbox"><input type="checkbox" name="projektart[]" value="NVT/GVT"> NVT/GVT-Arbeiten</label>
+          <label class="checkbox"><input type="checkbox" name="projektart[]" value="OTDR/Messung"> OTDR-/Dämpfungsmessungen</label>
+          <label class="checkbox"><input type="checkbox" name="projektart[]" value="Entstoerung/Restmeter"> Entstörung/Restmeter</label>
+          <label class="checkbox"><input type="checkbox" name="projektart[]" value="Sonstiges"> Sonstiges</label>
+        </div>
+      </fieldset>
 
       <div class="field">
         <label for="beschreibung">Kurzbeschreibung / Scope*</label>
@@ -115,21 +112,22 @@
         </div>
       </div>
 
+      <!-- Datei-Upload optional (nur wenn Formspree-Plan das unterstützt) -->
       <div class="field">
         <label for="anlage">Anhang (LV/Pläne, optional)</label>
         <input id="anlage" name="anlage" type="file" accept=".pdf,.doc,.docx,.xlsx,.xls,.zip,.png,.jpg">
-        <small class="help">Falls Upload nicht möglich: Bitte per E-Mail an info@nexentra.de senden.</small>
+        <small class="help">Falls Upload nicht möglich: Bitte per E-Mail an <a href="mailto:info@nexentra.de">info@nexentra.de</a> senden.</small>
       </div>
 
-<div class="field privacy-row">
-  <input type="checkbox" id="privacy" name="privacy" required>
-  <label for="privacy">
-    Ich habe die <a href="datenschutz.html" target="_blank" rel="noopener">Datenschutzhinweise</a> gelesen und stimme der Verarbeitung zu.*
-  </label>
-</div>
+      <!-- Datenschutz (Pflicht) -->
+      <div class="field privacy-row">
+        <input type="checkbox" id="privacy" name="privacy" required>
+        <label for="privacy">
+          Ich habe die <a href="datenschutz.html" target="_blank" rel="noopener">Datenschutzhinweise</a> gelesen und stimme der Verarbeitung zu.*
+        </label>
+      </div>
 
-
-      <div class="center" style="margin-top:1.5rem;">
+      <div class="center" style="margin-top:1.25rem;">
         <button type="submit" class="cta">Anfrage senden</button>
       </div>
     </form>
@@ -145,8 +143,20 @@
   </div>
 </footer>
 
+<script>
+  // Minimaler Frontend-Check: warnen, wenn der Endpoint nicht gesetzt wurde
+  (function(){
+    const form = document.getElementById('contact-form');
+    if (form && form.action.includes('REPLACE_WITH_YOUR_ENDPOINT')) {
+      console.warn('Formspree-Endpoint fehlt. Bitte action= auf deine echte URL setzen.');
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        alert('Hinweis: Bitte in kontakt.html den Formspree-Endpoint ersetzen (action="https://formspree.io/f/…").');
+      });
+    }
+  })();
+</script>
+
 <script src="app.js"></script>
 </body>
 </html>
-
-<input type="hidden" name="_redirect" value="https://nexentra.de/danke.html">
