@@ -92,7 +92,7 @@ button { font-family: inherit; }
   text-align: center;
 }
 .hero img.biglogo {
-  max-width: 420px;           /* Logo-Größe Startseite */
+  max-width: 650px;           /* Logo-Größe Startseite */
 }
 .hero h1 {
   font-size: clamp(28px, 4vw, 42px);
