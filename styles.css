@@ -297,3 +297,41 @@ label.checkbox input[type="checkbox"] {
 }
 
 .privacy-row a { text-decoration: underline; }
+
+
+
+
+
+.hero {
+  padding: 40px 0 55px;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(4,16,24,.96),
+      rgba(11,58,98,.88),
+      rgba(4,16,24,.45)
+    ),
+    url("assets/fiber-bg.png");
+
+  background-size: cover;
+  background-position: center right;
+  background-repeat: no-repeat;
+
+  color: #ffffff;
+
+  border-bottom: 1px solid rgba(0,194,199,.25);
+}
+
+.hero h1 {
+  color: #ffffff;
+}
+
+.hero .p {
+  color: #d8ecff;
+}
+
+.hero img.biglogo {
+  max-width: 360px;
+  filter: drop-shadow(0 0 18px rgba(0,194,199,.22));
+}
