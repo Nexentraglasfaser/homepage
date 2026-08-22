@@ -338,3 +338,13 @@ label.checkbox input[type="checkbox"] {
   max-width: 360px;
   filter: drop-shadow(0 0 18px rgba(0,194,199,.22));
 }
+
+
+/* Lesbarkeit heller Karten im dunklen Hero */
+.hero .card {
+  color: var(--fg);
+}
+
+.hero .card .p {
+  color: var(--muted);
+}
