@@ -28,10 +28,35 @@ document.querySelectorAll('[data-slider]').forEach((slider) => {
   const interval = Number(slider.dataset.autoplay) || 6500;
   let activeSlide = 0;
   let autoplay;
+  let slideRequest = 0;
 
-  const showSlide = (index) => {
+  const prepareSlide = async (index) => {
+    const slide = slides[(index + slides.length) % slides.length];
+    const image = slide?.querySelector('img');
+
+    if (!image || (image.complete && image.naturalWidth > 0)) return true;
+
+    image.loading = 'eager';
+
+    try {
+      await image.decode();
+    } catch {
+      // decode() may reject before a delayed network request finishes.
+    }
+
+    return image.complete && image.naturalWidth > 0;
+  };
+
+  const showSlide = async (index) => {
     if (!slides.length) return;
-    activeSlide = (index + slides.length) % slides.length;
+    const targetSlide = (index + slides.length) % slides.length;
+    const request = ++slideRequest;
+    const ready = await prepareSlide(targetSlide);
+
+    // Keep the current photo visible until the next one is fully decoded.
+    if (!ready || request !== slideRequest) return;
+
+    activeSlide = targetSlide;
 
     slides.forEach((slide, slideIndex) => {
       const active = slideIndex === activeSlide;
@@ -46,29 +71,31 @@ document.querySelectorAll('[data-slider]').forEach((slider) => {
       else dot.removeAttribute('aria-current');
     });
 
+    // Preload the next photo during the complete display interval.
+    void prepareSlide(activeSlide + 1);
   };
 
   const stopAutoplay = () => window.clearInterval(autoplay);
   const startAutoplay = () => {
     stopAutoplay();
     if (!reduceMotion && slides.length > 1) {
-      autoplay = window.setInterval(() => showSlide(activeSlide + 1), interval);
+      autoplay = window.setInterval(() => void showSlide(activeSlide + 1), interval);
     }
   };
 
   previous?.addEventListener('click', () => {
-    showSlide(activeSlide - 1);
+    void showSlide(activeSlide - 1);
     startAutoplay();
   });
 
   next?.addEventListener('click', () => {
-    showSlide(activeSlide + 1);
+    void showSlide(activeSlide + 1);
     startAutoplay();
   });
 
   dots.forEach((dot) => {
     dot.addEventListener('click', () => {
-      showSlide(Number(dot.dataset.slideTo));
+      void showSlide(Number(dot.dataset.slideTo));
       startAutoplay();
     });
   });
@@ -78,10 +105,11 @@ document.querySelectorAll('[data-slider]').forEach((slider) => {
   slider.addEventListener('focusin', stopAutoplay);
   slider.addEventListener('focusout', startAutoplay);
   slider.addEventListener('keydown', (event) => {
-    if (event.key === 'ArrowLeft') showSlide(activeSlide - 1);
-    if (event.key === 'ArrowRight') showSlide(activeSlide + 1);
+    if (event.key === 'ArrowLeft') void showSlide(activeSlide - 1);
+    if (event.key === 'ArrowRight') void showSlide(activeSlide + 1);
   });
 
-  showSlide(0);
+  void showSlide(0);
+  void prepareSlide(1);
   startAutoplay();
 });
