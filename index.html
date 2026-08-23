@@ -1,305 +1,361 @@
-
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Nexentra – NE2 & NE3 Glasfasertechnik</title>
-
-  <meta name="description" content="Nexentra unterstützt Netzbetreiber, Generalunternehmer und Tiefbauunternehmen bei NE2- und NE3-Glasfaserprojekten: Einblasen, HK-/Backbone-Spleißarbeiten, NVT/GVS-Arbeiten, Messtechnik, Dokumentation und Entstörung.">
-
+  <meta name="description" content="Nexentra Glasfasertechnik: Einblasen, Spleißen, Messen, Dokumentieren und technische Fehlerortung – mit netzbetreiberübergreifender Projekterfahrung.">
+  <meta name="theme-color" content="#071323">
+  <title>Nexentra | Glasfasertechnik mit Präzision</title>
+  <link rel="preload" href="assets/fiber-bg.png" as="image">
   <link rel="stylesheet" href="styles.css">
-  <link rel="icon" type="image/png" href="assets/favicon.png">
-
-  <meta property="og:title" content="Nexentra – NE2 & NE3 Glasfasertechnik">
-  <meta property="og:description" content="Einblasen, HK-/Backbone-Spleißen, NVT/GVS-Arbeiten, Messtechnik, Dokumentation und Entstörung für FTTH-Projekte.">
-  <meta property="og:type" content="website">
-  <meta property="og:image" content="assets/logo.png">
+  <script src="app.js" defer></script>
 </head>
-
 <body>
+  <a class="skip-link" href="#main">Zum Inhalt springen</a>
 
-<header class="header">
-  <div class="container nav">
-    <nav id="menu" class="menu">
-      <a href="index.html" style="font-weight:700">Start</a>
-      <a href="leistungen.html">Leistungen</a>
-      <a href="kontakt.html">Kontakt</a>
-      <a href="datenschutz.html">Datenschutz</a>
-      <a class="cta" href="kontakt.html">Anfrage starten</a>
-    </nav>
-
-    <button class="burger" onclick="toggleMenu()">☰</button>
-  </div>
-</header>
-
-<!-- HERO -->
-<section class="hero">
-  <img src="assets/logo.png" alt="Nexentra Logo" class="biglogo">
-
-  <h1>NE2- & NE3-Glasfasertechnik für FTTH-Projekte</h1>
-
-  <div class="container">
-    <p class="p">
-      Nexentra unterstützt Netzbetreiber, Generalunternehmer und Tiefbauunternehmen bei Glasfaser-Einblasen,
-      HK-/Backbone-Spleißarbeiten, NVT/GVS-Arbeiten, Messtechnik, Dokumentation und Entstörung.
-    </p>
-
-    <div class="center" style="margin-top:1.25rem;">
-      <a class="cta" href="kontakt.html">Kapazität anfragen</a>
-
-      <a class="cta" href="leistungen.html" style="margin-left:.75rem;">
-        Leistungen ansehen
+  <header class="site-header" data-header>
+    <div class="container nav-wrap">
+      <a class="brand" href="#start" aria-label="Nexentra Startseite">
+        <img src="assets/logo.png" alt="Nexentra Glasfasertechnik">
       </a>
+
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-nav" data-menu-toggle>
+        <span></span><span></span><span></span>
+        <span class="sr-only">Menü öffnen</span>
+      </button>
+
+      <nav class="main-nav" id="main-nav" aria-label="Hauptnavigation" data-nav>
+        <a href="#leistungen">Leistungen</a>
+        <a href="#reparaturen">Fehlerortung</a>
+        <a href="#ablauf">Arbeitsweise</a>
+        <a href="#unternehmen">Unternehmen</a>
+        <a class="nav-cta" href="#kontakt">Projekt anfragen</a>
+      </nav>
     </div>
-  </div>
-</section>
+  </header>
 
-<!-- PROJEKTERFAHRUNG -->
-<section>
-  <div class="container">
+  <main id="main">
+    <section class="hero" id="start">
+      <div class="hero-backdrop" aria-hidden="true"></div>
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow"><span></span> NE2- &amp; NE3-Glasfasertechnik</p>
+          <h1>Von der Trasse bis zum <em>fertigen Anschluss.</em></h1>
+          <p class="hero-lead">Einblasen, Spleißen, Messen und Dokumentieren – plus spezialisierte Fehlerortung und technische Problemlösung gemeinsam mit Tiefbau-Teams.</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#kontakt">Projekt besprechen <span aria-hidden="true">→</span></a>
+            <a class="button button-ghost" href="#reparaturen">Fehlerortung &amp; Begleitung</a>
+          </div>
+          <ul class="trust-list" aria-label="Leistungsversprechen">
+            <li><span>✓</span> Praxiserfahren</li>
+            <li><span>✓</span> Sauber dokumentiert</li>
+            <li><span>✓</span> Zuverlässig umgesetzt</li>
+          </ul>
+        </div>
 
-    <div class="card center">
-      <h2>Projekterfahrung im FTTH-Ausbau</h2>
+        <aside class="hero-panel" aria-label="Nexentra Kernleistungen">
+          <p class="panel-kicker">Unsere Stärke</p>
+          <h2>Glasfasertechnik mit Präzision</h2>
+          <div class="hero-metric">
+            <div><strong>Ausbau</strong><small>Einblasen · Spleißen · Messen</small></div>
+          </div>
+          <div class="hero-metric">
+            <div><strong>Entstörung</strong><small>Ortung · Begleitung · LWL-Reparatur</small></div>
+          </div>
+          <div class="hero-metric">
+            <div><strong>Dokumentation</strong><small>Fotos · Messwerte · Protokolle</small></div>
+          </div>
+          <a class="panel-link" href="tel:+4923063094604">Direkt sprechen: 02306 3094604</a>
+        </aside>
+      </div>
+      <div class="hero-edge" aria-hidden="true"></div>
+    </section>
 
-      <p class="p">
-        Praktische Projekterfahrung in FTTH-Netzen u. a. von Vodafone, Telekom,
-        Westnetz und Deutsche GigaNetz – im Rahmen von Nachunternehmer-
-        und Projektstrukturen.
-      </p>
+    <section class="logo-strip" aria-label="Einsatzbereiche">
+      <div class="container strip-inner">
+        <span>Netzbetreiber</span><i></i><span>Generalunternehmer</span><i></i><span>Tiefbauunternehmen</span><i></i><span>FTTH-Projekte</span>
+      </div>
+    </section>
 
-      <p class="p">
-        Erfahrung besteht mit unterschiedlichen Prozessvorgaben,
-        App-/Systemabläufen, Statusmeldungen, Fotodokumentation,
-        OTDR-Reports, Faserzuordnung, ONT-/GF-TA-Prozessen
-        sowie der Bearbeitung von Fehlerstellen und Nacharbeiten.
-      </p>
+    <section class="section services" id="leistungen">
+      <div class="container">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow dark"><span></span> Leistungen</p>
+            <h2>Technik, die im Feld funktioniert.</h2>
+          </div>
+          <p>Wir unterstützen laufende Ausbaucluster, Restadressen, Nacharbeiten und klar definierte Arbeitspakete – operativ, strukturiert und nachvollziehbar.</p>
+        </div>
+
+        <div class="service-grid">
+          <article class="service-card featured">
+            <div class="service-icon" aria-hidden="true">↗</div>
+            <h3>Glasfaser-Einblasen</h3>
+            <p>Materialschonendes Einblasen von Mikro- und Minikabeln vom Netzverteiler bis zum Hausübergabepunkt.</p>
+            <ul><li>NE2 &amp; NE3</li><li>Speedpipes</li><li>Hausanschlüsse</li></ul>
+          </article>
+
+          <article class="service-card">
+            <div class="service-icon" aria-hidden="true">⌁</div>
+            <h3>Spleißarbeiten</h3>
+            <p>Spleißen an APL/HÜP, Muffen, NVT und GVS sowie strukturierte Kassetten- und Faserbearbeitung.</p>
+            <ul><li>APL &amp; HÜP</li><li>NVT &amp; GVS</li><li>Backbone</li></ul>
+          </article>
+
+          <article class="service-card">
+            <div class="service-icon" aria-hidden="true">⌁</div>
+            <h3>Messtechnik</h3>
+            <p>OTDR- und Dämpfungsmessungen mit sauberer Bewertung und auswertbaren Reports.</p>
+            <ul><li>OTDR</li><li>Power Meter</li><li>Abnahme</li></ul>
+          </article>
+
+          <article class="service-card repair-card">
+            <div class="service-icon" aria-hidden="true">⚙</div>
+            <h3>Fehlerortung &amp; Begleitung</h3>
+            <p>Wir lokalisieren Trassenstörungen, bestimmen den Öffnungspunkt und lösen das technische Problem gemeinsam mit dem zuständigen Tiefbau-Team.</p>
+            <a href="#reparaturen">Mehr zur Zusammenarbeit <span>→</span></a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section repairs" id="reparaturen">
+      <div class="container repair-grid">
+        <div class="repair-visual">
+          <div class="repair-slider" data-slider data-autoplay="5600" aria-label="Reparatur- und LWL-Arbeiten" aria-roledescription="Bildergalerie">
+            <div class="repair-slides">
+              <figure class="repair-slide active" data-slide aria-hidden="false">
+                <img src="assets/reparaturen/trasse-rohrverband.jpg" alt="Freigelegter Rohrverband in einer geöffneten Glasfasertrasse">
+                <figcaption><span>Bad Sassendorf</span>Freigelegten Rohrverband technisch geprüft</figcaption>
+              </figure>
+              <figure class="repair-slide" data-slide aria-hidden="true">
+                <img src="assets/reparaturen/tiefenlage-dokumentation.jpg" alt="Dokumentation der Tiefenlage an einer geöffneten Glasfasertrasse" loading="lazy">
+                <figcaption><span>Bad Sassendorf</span>Geöffneten Trassenbereich und Tiefenlage dokumentiert</figcaption>
+              </figure>
+              <figure class="repair-slide" data-slide aria-hidden="true">
+                <img src="assets/reparaturen/rohrverbinder-detail.jpg" alt="Freigelegter Verbinder an einem Mikrorohr" loading="lazy">
+                <figcaption><span>Bad Sassendorf</span>Beschädigte Rohrverbindung lokalisiert</figcaption>
+              </figure>
+              <figure class="repair-slide" data-slide aria-hidden="true">
+                <img src="assets/reparaturen/mikrorohr-reparatur.jpg" alt="Mehrere freigelegte Mikrorohre im Reparaturbereich" loading="lazy">
+                <figcaption><span>Bad Sassendorf</span>Mikrorohre geprüft und neu verbunden</figcaption>
+              </figure>
+              <figure class="repair-slide" data-slide aria-hidden="true">
+                <img src="assets/reparaturen/anschlussfertigstellung.jpg" alt="Glasfaserkabel am Haus nach der technischen Störungsbehebung" loading="lazy">
+                <figcaption><span>Bad Sassendorf</span>Kabel eingeblasen und Anschluss fertiggestellt</figcaption>
+              </figure>
+              <figure class="repair-slide" data-slide aria-hidden="true">
+                <img src="assets/lwl/nvt-innenausbau.jpg" alt="Geöffneter Glasfaser-Netzverteiler mit vorbereiteten Anschlussfeldern" loading="lazy">
+                <figcaption><span>Netztechnik</span>NVT-Innenausbau und vorbereitete Anschlussfelder</figcaption>
+              </figure>
+              <figure class="repair-slide" data-slide aria-hidden="true">
+                <img src="assets/lwl/faserfuehrung-nvt.jpg" alt="Technisches Detail eines Netzverteilers mit sauber geführten Glasfasern" loading="lazy">
+                <figcaption><span>Präzision</span>Saubere Faserführung im Netzverteiler</figcaption>
+              </figure>
+              <figure class="repair-slide" data-slide aria-hidden="true">
+                <img src="assets/lwl/nvt-kassettenfeld.jpg" alt="Kassettenfeld und Anschlussbereiche in einem Glasfaser-Netzverteiler" loading="lazy">
+                <figcaption><span>NVT-Aufbau</span>Kassettenfeld und Anschlussbereiche strukturiert vorbereitet</figcaption>
+              </figure>
+              <figure class="repair-slide" data-slide aria-hidden="true">
+                <img src="assets/lwl/spleisskassette-mux1.jpg" alt="Technisches Detail einer MUX- und Splitterbelegung in einer Spleißkassette" loading="lazy">
+                <figcaption><span>Spleißtechnik</span>MUX- und Splitterbelegung sauber geführt</figcaption>
+              </figure>
+              <figure class="repair-slide" data-slide aria-hidden="true">
+                <img src="assets/lwl/spleisskassette-mux2.jpg" alt="Spleißkassette mit geordnetem Verlauf der Glasfasern" loading="lazy">
+                <figcaption><span>Faserführung</span>Spleißkassette mit geordnetem Faserverlauf</figcaption>
+              </figure>
+              <figure class="repair-slide" data-slide aria-hidden="true">
+                <img src="assets/lwl/spleisskassette-splitter.jpg" alt="Detailansicht eines Splitteranschlusses mit geführten Glasfasern" loading="lazy">
+                <figcaption><span>Splittertechnik</span>Splitteranschluss und Glasfaserführung im Detail</figcaption>
+              </figure>
+              <figure class="repair-slide" data-slide aria-hidden="true">
+                <img src="assets/lwl/nvt-rohr-und-faserfuehrung.jpg" alt="Sauber geführte Mikrorohre und Fasern in einem Glasfaser-Netzverteiler" loading="lazy">
+                <figcaption><span>NVT-Montage</span>Rohr- und Faserführung übersichtlich aufgebaut</figcaption>
+              </figure>
+              <figure class="repair-slide" data-slide aria-hidden="true">
+                <img src="assets/lwl/nvt-anschlussvorbereitung.jpg" alt="Strukturierte Anschlussvorbereitung in einem Glasfaser-Netzverteiler" loading="lazy">
+                <figcaption><span>Netzverteiler</span>Fasern und Mikrorohre strukturiert vorbereitet</figcaption>
+              </figure>
+              <figure class="repair-slide" data-slide aria-hidden="true">
+                <img src="assets/lwl/nvt-rohrmanagement.jpg" alt="Geordnetes Rohrmanagement in einem Glasfaser-Netzverteiler" loading="lazy">
+                <figcaption><span>Rohrmanagement</span>Reserven sauber geführt und eindeutig zugänglich</figcaption>
+              </figure>
+              <figure class="repair-slide" data-slide aria-hidden="true">
+                <img src="assets/lwl/apl-faserablage.jpg" alt="Geordnete Faserablage und Spleiße in einem geöffneten APL" loading="lazy">
+                <figcaption><span>APL-Montage</span>Fasern geordnet abgelegt und vollständig gespleißt</figcaption>
+              </figure>
+              <figure class="repair-slide" data-slide aria-hidden="true">
+                <img src="assets/lwl/apl-ausgerichtet.jpg" alt="Sauber ausgerichteter und fachgerecht montierter Glasfaser-APL" loading="lazy">
+                <figcaption><span>APL-Präzision</span>APL sauber ausgerichtet und fachgerecht montiert</figcaption>
+              </figure>
+            </div>
+
+            <div class="slider-toolbar">
+              <div class="slider-buttons">
+                <button type="button" data-slide-prev aria-label="Vorheriges Reparaturfoto">←</button>
+                <button type="button" data-slide-next aria-label="Nächstes Reparaturfoto">→</button>
+              </div>
+            </div>
+
+            <div class="slider-dots" role="group" aria-label="Foto auswählen">
+              <button class="active" type="button" data-slide-to="0" aria-label="Foto 1 anzeigen" aria-current="true"></button>
+              <button type="button" data-slide-to="1" aria-label="Foto 2 anzeigen"></button>
+              <button type="button" data-slide-to="2" aria-label="Foto 3 anzeigen"></button>
+              <button type="button" data-slide-to="3" aria-label="Foto 4 anzeigen"></button>
+              <button type="button" data-slide-to="4" aria-label="Foto 5 anzeigen"></button>
+              <button type="button" data-slide-to="5" aria-label="Foto 6 anzeigen"></button>
+              <button type="button" data-slide-to="6" aria-label="Foto 7 anzeigen"></button>
+              <button type="button" data-slide-to="7" aria-label="Foto 8 anzeigen"></button>
+              <button type="button" data-slide-to="8" aria-label="Foto 9 anzeigen"></button>
+              <button type="button" data-slide-to="9" aria-label="Foto 10 anzeigen"></button>
+              <button type="button" data-slide-to="10" aria-label="Foto 11 anzeigen"></button>
+              <button type="button" data-slide-to="11" aria-label="Foto 12 anzeigen"></button>
+              <button type="button" data-slide-to="12" aria-label="Foto 13 anzeigen"></button>
+              <button type="button" data-slide-to="13" aria-label="Foto 14 anzeigen"></button>
+              <button type="button" data-slide-to="14" aria-label="Foto 15 anzeigen"></button>
+              <button type="button" data-slide-to="15" aria-label="Foto 16 anzeigen"></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="repair-copy">
+          <p class="eyebrow"><span></span> Fehlerortung &amp; technische Begleitung</p>
+          <h2>Gemeinsam mit dem Tiefbau-Team lösen wir Trassenprobleme.</h2>
+          <p class="repair-lead">Nexentra führt keine eigenständigen Erd- oder Tiefbauarbeiten aus. Wir lokalisieren die Störstelle, bestimmen den notwendigen Öffnungspunkt und unterstützen das beauftragte Tiefbau-Team mit unserer Erfahrung. Nach der Öffnung beheben unsere LWL-Techniker das technische Problem und stellen den Glasfaseranschluss vollständig fertig.</p>
+
+          <div class="role-split" aria-label="Arbeitsteilung bei Trassenstörungen">
+            <div>
+              <span>Nexentra</span>
+              <strong>Technik &amp; Problemlösung</strong>
+              <p>Fehler orten, Öffnungspunkt bestimmen, Mikrorohre prüfen und den Anschluss fertigstellen.</p>
+            </div>
+            <div>
+              <span>Tiefbaupartner</span>
+              <strong>Öffnen &amp; Wiederherstellen</strong>
+              <p>Grube herstellen, Trasse zugänglich machen und die Oberfläche anschließend schließen.</p>
+            </div>
+          </div>
+
+          <div class="issue-list">
+            <div><p><strong>Kabelstopp</strong>Blockaden, enge Radien oder beschädigte Rohrabschnitte gezielt lokalisieren.</p></div>
+            <div><p><strong>Keine Luft</strong>Undichte, unterbrochene oder falsch verbundene Mikrorohre prüfen und technisch instand setzen.</p></div>
+            <div><p><strong>Vertauschte Pipes</strong>Fehlzuordnungen erkennen, Rohrbelegung korrigieren und sauber dokumentieren.</p></div>
+            <div><p><strong>Beschädigte Verbindungen</strong>Zugängliche Konnektoren und Rohrverbindungen instand setzen und erneut prüfen.</p></div>
+          </div>
+
+          <a class="text-link" href="#kontakt">Zusammenarbeit besprechen <span>→</span></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section process" id="ablauf">
+      <div class="container">
+        <div class="section-heading centered">
+          <p class="eyebrow dark"><span></span> Arbeitsweise</p>
+          <h2>Klare Schritte. Saubere Ergebnisse.</h2>
+          <p>Vom Projektbriefing bis zur Übergabe bleibt jeder Arbeitsschritt transparent und dokumentiert.</p>
+        </div>
+
+        <ol class="process-grid">
+          <li><h3>Briefing</h3><p>Umfang, Schnittstellen, Vorgaben und Abnahmekriterien gemeinsam klären.</p></li>
+          <li><h3>Ausführung</h3><p>Einblasen, Spleißen oder Fehlerstellen im Feld fachgerecht bearbeiten.</p></li>
+          <li><h3>Prüfung</h3><p>Verbindungen testen, Messwerte erfassen und Qualität kontrollieren.</p></li>
+          <li><h3>Übergabe</h3><p>Fotodokumentation, Statusmeldung und Messprotokolle strukturiert übergeben.</p></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="section operator-experience" id="netzbetreiber">
+      <div class="container">
+        <div class="section-heading operator-heading">
+          <div>
+            <p class="eyebrow dark"><span></span> Netzbetreiberübergreifende Erfahrung</p>
+            <h2>Unterschiedliche Vorgaben. Ein verlässlicher Ablauf.</h2>
+          </div>
+          <p>Unsere Teams haben Glasfaserprojekte für unterschiedliche Netzbetreiber und Auftraggeber umgesetzt. Dadurch kennen wir nicht nur die Technik, sondern auch die jeweiligen Prozesse, Dokumentationsstandards und digitalen Systeme.</p>
+        </div>
+
+        <div class="operator-layout">
+          <div class="operator-brands" aria-label="Netzbetreiber und Projektumfelder mit Nexentra-Erfahrung">
+            <span>Deutsche Telekom</span>
+            <span>Deutsche GigaNetz</span>
+            <span>Vodafone</span>
+            <span>E.ON · Westnetz · Westconnect</span>
+          </div>
+
+          <div class="operator-capabilities">
+            <article>
+              <div><h3>Technische Vorgaben</h3><p>Erfahrung mit unterschiedlichen Ausbaukonzepten, Netzstrukturen, Rohrbelegungen sowie NVT-, APL/HÜP- und Abnahmevorgaben.</p></div>
+            </article>
+            <article>
+              <div><h3>Programme &amp; Portale</h3><p>Sicherer Umgang mit netzbetreiberspezifischen Auftrags-, Termin-, Dokumentations- und Abnahmesystemen.</p></div>
+            </article>
+            <article>
+              <div><h3>Nachweisbare Dokumentation</h3><p>Fotodokumentation, Messwerte, Statusmeldungen und Protokolle werden entsprechend der jeweiligen Projektvorgaben vollständig übergeben.</p></div>
+            </article>
+          </div>
+        </div>
+
+        <p class="operator-note">Die genannten Markennamen beschreiben unsere Projekterfahrung und stellen keine Aussage über eine aktuelle gesellschaftsrechtliche Verbindung oder offizielle Partnerschaft dar.</p>
+      </div>
+    </section>
+
+    <section class="section about" id="unternehmen">
+      <div class="container about-grid">
+        <div>
+          <p class="eyebrow dark"><span></span> Nexentra</p>
+          <h2>Praxisnah. Lösungsorientiert. Verlässlich.</h2>
+        </div>
+        <div class="about-copy">
+          <p>Nexentra unterstützt Netzbetreiber, Generalunternehmer und Tiefbauunternehmen bei der operativen Umsetzung von FTTH-Projekten.</p>
+          <p>Unsere Stärke liegt in der Verbindung aus technischer Ausführung, pragmatischer Problemlösung und nachvollziehbarer Dokumentation – besonders dort, wo Ausbauprojekte ins Stocken geraten.</p>
+          <div class="about-points">
+            <span>✓ Erfahrene Montageteams</span>
+            <span>✓ Flexible Projektunterstützung</span>
+            <span>✓ Digitale Dokumentation</span>
+            <span>✓ Direkte Kommunikation</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="contact" id="kontakt">
+      <div class="contact-pattern" aria-hidden="true"></div>
+      <div class="container contact-grid">
+        <div>
+          <p class="eyebrow"><span></span> Projektanfrage</p>
+          <h2>Wie können wir Ihr Glasfaserprojekt unterstützen?</h2>
+          <p>Ob Ausbaucluster, Restadressen, Nacharbeiten oder technische Begleitung bei Trassenstörungen: Schildern Sie uns kurz den Bedarf. Wir melden uns persönlich zurück.</p>
+          <div class="contact-actions">
+            <a class="button button-light" href="mailto:info@nexentra.de?subject=Projektanfrage%20Glasfasertechnik">E-Mail schreiben <span>→</span></a>
+            <a class="button button-outline-light" href="tel:+4923063094604">Jetzt anrufen</a>
+          </div>
+        </div>
+
+        <address class="contact-card">
+          <div><small>E-Mail</small><a href="mailto:info@nexentra.de">info@nexentra.de</a></div>
+          <div><small>Festnetz</small><a href="tel:+4923063094604">+49 2306 3094604</a></div>
+          <div><small>Mobil</small><a href="tel:+4916348920004">+49 163 8920004</a></div>
+          <div><small>Standort</small><span>Otto-Klug-Weg 10<br>44536 Lünen</span></div>
+        </address>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-top">
+      <a class="footer-brand" href="#start"><img src="assets/logo.png" alt="Nexentra"></a>
+      <p>Glasfasertechnik mit Präzision.<br>Einblasen · Spleißen · Messen · Störungen lösen</p>
+      <div class="footer-links">
+        <a href="#leistungen">Leistungen</a>
+        <a href="#reparaturen">Fehlerortung</a>
+        <a href="#kontakt">Kontakt</a>
+      </div>
     </div>
-
-  </div>
-</section>
-
-<!-- USP -->
-<section>
-  <div class="container">
-
-    <div class="grid grid-3">
-
-      <div class="card">
-        <h2>Spezialisiert</h2>
-
-        <p class="p">
-          Einblasen in Speedpipes/Rohrverbände,
-          HK-/Backbone-Spleißarbeiten,
-          Spleißen an APL/HÜP, Muffen, NVT/GVS
-          sowie OTDR- und Dämpfungsmessungen.
-        </p>
-      </div>
-
-      <div class="card">
-        <h2>Strukturiert</h2>
-
-        <p class="p">
-          Klare Abläufe, UVV-/PSA-konforme Arbeitsweise,
-          saubere Kennzeichnung, strukturierte Kassettierung,
-          digitale Statusmeldungen und nachvollziehbare Dokumentation.
-        </p>
-      </div>
-
-      <div class="card">
-        <h2>Zuverlässig</h2>
-
-        <p class="p">
-          Planbare Projektunterstützung bei laufenden Ausbauclustern,
-          Restadressen, Nacharbeiten, Fehlerstellen
-          und operativen Engpässen.
-        </p>
-      </div>
-
+    <div class="container footer-bottom">
+      <span>© 2026 Nexentra Glasfasertechnik</span>
+      <div><a href="https://nexentra.de/impressum.html">Impressum</a><a href="https://nexentra.de/datenschutz.html">Datenschutz</a></div>
     </div>
-  </div>
-</section>
-
-<!-- SPEZIALISIERUNGEN -->
-<section>
-  <div class="container">
-
-    <h2>Unsere Spezialisierungen</h2>
-
-    <div class="grid grid-3">
-
-      <div class="card">
-        <h3>Glasfaser-Einblasen NE3</h3>
-
-        <p class="p">
-          Materialschonendes Einblasen von Mikro-
-          und Minikabeln vom Netzverteiler
-          bis zum Hausübergabepunkt.
-        </p>
-      </div>
-
-      <div class="card">
-        <h3>HK-/Backbone-Spleißen NE2</h3>
-
-        <p class="p">
-          Unterstützung bei Hauptkabel-,
-          Backbone- und Netzverteilerarbeiten
-          nach Planvorgabe des Auftraggebers.
-        </p>
-      </div>
-
-      <div class="card">
-        <h3>Spleißen & Messtechnik</h3>
-
-        <p class="p">
-          Spleißen an APL/HÜP, Muffen,
-          NVT/GVS sowie OTDR- und
-          Dämpfungsmessungen
-          mit auswertbaren Reports.
-        </p>
-      </div>
-
-      <div class="card">
-        <h3>NVT/GVS-Arbeiten</h3>
-
-        <p class="p">
-          Faserbearbeitung,
-          Splitter-/Kassettenarbeiten,
-          Kennzeichnung und strukturierte Ablage
-          nach Projektvorgabe.
-        </p>
-      </div>
-
-      <div class="card">
-        <h3>Dokumentation & Abnahme</h3>
-
-        <p class="p">
-          Fotodokumentation,
-          Statusmeldungen,
-          Spleiß- und Messprotokolle,
-          OTDR-PDFs und digitale Projektordner.
-        </p>
-      </div>
-
-      <div class="card">
-        <h3>Entstörung & Nacharbeiten</h3>
-
-        <p class="p">
-          Fehleranalyse,
-          Nacharbeiten,
-          Restmeter-Einzüge,
-          Prüfung von Kabelstopps,
-          fehlender Luft und auffälligen Messwerten.
-        </p>
-      </div>
-
-    </div>
-
-    <div class="center" style="margin-top:1.5rem;">
-      <a class="cta" href="leistungen.html">
-        Details zu allen Leistungen
-      </a>
-    </div>
-
-  </div>
-</section>
-
-<!-- ABLAUF -->
-<section>
-  <div class="container">
-
-    <h2>So arbeiten wir</h2>
-
-    <div class="grid grid-3">
-
-      <div class="card">
-        <h3>1. Projektbriefing</h3>
-
-        <p class="p">
-          Klärung von Umfang,
-          Schnittstellen,
-          Prozessvorgaben,
-          Dokumentation,
-          Messanforderungen
-          und Abnahmekriterien.
-        </p>
-      </div>
-
-      <div class="card">
-        <h3>2. Umsetzung</h3>
-
-        <p class="p">
-          Einblasen,
-          Spleißen,
-          Messen,
-          Dokumentieren –
-          mit laufender Statusmeldung
-          und sauberer Kommunikation
-          zur Bauleitung.
-        </p>
-      </div>
-
-      <div class="card">
-        <h3>3. Übergabe</h3>
-
-        <p class="p">
-          Vollständige Dokumentation,
-          Messprotokolle,
-          Fotodoku,
-          Abnahmeunterlagen
-          und strukturierte Übergabe
-          an GU oder Auftraggeber.
-        </p>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<!-- FINAL CTA -->
-<section>
-  <div class="container center">
-
-    <h2>Operative Unterstützung für Ihr nächstes Glasfaserprojekt</h2>
-
-    <p class="p">
-      Unterstützung bei laufenden Ausbauclustern,
-      Projektspitzen,
-      Restadressen,
-      Nacharbeiten
-      oder klar definierten Arbeitspaketen –
-      zuverlässig,
-      dokumentiert
-      und praxisnah.
-    </p>
-
-    <div class="center" style="margin-top:1rem;">
-      <a class="cta" href="kontakt.html">
-        Projekt besprechen
-      </a>
-    </div>
-
-  </div>
-</section>
-
-<footer>
-  <div class="container footer-inner">
-
-    <div>
-      © 2025 Nexentra – Glasfaserlösungen
-    </div>
-
-    <div class="footer-links">
-      <a href="impressum.html" aria-label="Impressum">
-        Impressum
-      </a>
-    </div>
-
-  </div>
-</footer>
-
-<script src="app.js"></script>
-
+  </footer>
 </body>
 </html>
