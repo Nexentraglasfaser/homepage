@@ -133,6 +133,7 @@
     .time-option small { display: block; margin-top: 3px; color: var(--muted); font-weight: 550; }
     .time-option input:checked + label { border-color: var(--cyan-dark); background: #e9fbfa; box-shadow: inset 0 0 0 1px var(--cyan-dark); }
     .time-option input:focus-visible + label { outline: 3px solid rgba(53, 214, 210, .35); outline-offset: 2px; }
+    .time-option input:disabled + label { color: var(--muted); background: var(--mist); cursor: not-allowed; opacity: .65; }
 
     .notice { margin: 24px 0 18px; padding: 15px 17px; border-left: 4px solid var(--cyan-dark); border-radius: 8px; background: #edf9f9; color: #284451; font-size: .94rem; }
     .privacy { display: grid; grid-template-columns: 20px 1fr; gap: 10px; align-items: start; color: var(--muted); font-size: .9rem; }
@@ -277,6 +278,7 @@
                 <label for="nachmittags">Nachmittags <small>14–18 Uhr</small></label>
               </div>
             </div>
+            <p class="availability-message" id="zeitraumhinweis" aria-live="polite">Bitte wählen Sie zuerst einen Tag aus.</p>
           </fieldset>
 
           <div>
@@ -287,12 +289,8 @@
           </div>
           <div>
             <label for="alternativzeitraum">Alternativer Zeitraum <span class="optional">(optional)</span></label>
-            <select id="alternativzeitraum" name="alternativzeitraum">
+            <select id="alternativzeitraum" name="alternativzeitraum" disabled>
               <option value="">Bitte auswählen</option>
-              <option>Vormittags (08–12 Uhr)</option>
-              <option>Mittags (12–14 Uhr)</option>
-              <option>Nachmittags (14–18 Uhr)</option>
-              <option>Flexibel</option>
             </select>
           </div>
 
@@ -325,9 +323,25 @@
     const desiredDate = document.querySelector('#wunschtag');
     const alternativeDate = document.querySelector('#alternativtag');
     const availabilityMessage = document.querySelector('#terminhinweis');
+    const windowMessage = document.querySelector('#zeitraumhinweis');
+    const windowInputs = [...form.querySelectorAll('input[name="zeitraum"]')];
+    const alternativeWindow = document.querySelector('#alternativzeitraum');
+    const submitButton = form.querySelector('button[type="submit"]');
 
-    const appointmentDates = {
-      munster: ['2026-09-07', '2026-09-08', '2026-09-09', '2026-09-10']
+    // Abgleich mit „Münster Termine“, Tagesreitern 07.–10.09.2026, Stand 06.09.2026.
+    // Montag ist gesperrt. Dienstag sind beide Mittagstermine bereits belegt.
+    // Freigaben gelten für unverbindliche Anfragen, nicht als automatische Reservierung.
+    const appointmentAvailability = {
+      munster: {
+        '2026-09-08': ['Vormittags', 'Nachmittags'],
+        '2026-09-09': ['Vormittags', 'Mittags', 'Nachmittags'],
+        '2026-09-10': ['Vormittags', 'Mittags', 'Nachmittags']
+      }
+    };
+    const windowLabels = {
+      Vormittags: 'Vormittags (08–12 Uhr)',
+      Mittags: 'Mittags (12–14 Uhr)',
+      Nachmittags: 'Nachmittags (14–18 Uhr)'
     };
 
     const normalizeCity = (city) => city
@@ -351,12 +365,42 @@
       select.disabled = dates.length === 0;
     };
 
+    const availableWindows = (date) =>
+      appointmentAvailability[normalizeCity(cityInput.value)]?.[date] || [];
+
+    const updateAvailableWindows = () => {
+      const windows = availableWindows(desiredDate.value);
+      windowInputs.forEach((input) => {
+        input.disabled = !windows.includes(input.value);
+        if (input.disabled) input.checked = false;
+      });
+      submitButton.disabled = windows.length === 0;
+      windowMessage.textContent = !windows.length
+        ? 'Bitte wählen Sie zuerst einen verfügbaren Tag aus.'
+        : windows.length === windowInputs.length
+          ? 'In allen drei Zeitfenstern sind noch Termine anfragbar.'
+          : 'Ausgebuchte Zeitfenster sind gesperrt. Bitte wählen Sie einen verfügbaren Zeitraum.';
+
+      const alternativeWindows = availableWindows(alternativeDate.value);
+      const previousWindow = alternativeWindow.value;
+      alternativeWindow.replaceChildren(new Option('Bitte auswählen', ''));
+      alternativeWindows.forEach((window) => {
+        alternativeWindow.add(new Option(windowLabels[window], windowLabels[window]));
+      });
+      if (alternativeWindows.length) alternativeWindow.add(new Option('Flexibel', 'Flexibel'));
+      alternativeWindow.disabled = alternativeWindows.length === 0;
+      if ([...alternativeWindow.options].some((option) => option.value === previousWindow)) {
+        alternativeWindow.value = previousWindow;
+      }
+    };
+
     const updateAvailableDates = () => {
       const enteredCity = cityInput.value.trim();
-      const dates = appointmentDates[normalizeCity(enteredCity)] || [];
+      const dates = Object.keys(appointmentAvailability[normalizeCity(enteredCity)] || {});
 
       fillDateSelect(desiredDate, dates, dates.length ? 'Bitte einen Tag auswählen' : 'Keine Termine verfügbar');
       fillDateSelect(alternativeDate, dates, 'Kein Alternativtag');
+      updateAvailableWindows();
 
       availabilityMessage.classList.remove('available', 'unavailable');
       if (!enteredCity) {
@@ -375,12 +419,28 @@
 
     cityInput.addEventListener('input', updateAvailableDates);
     cityInput.addEventListener('change', updateAvailableDates);
+    desiredDate.addEventListener('change', updateAvailableWindows);
+    alternativeDate.addEventListener('change', updateAvailableWindows);
     updateAvailableDates();
 
     const value = (selector) => document.querySelector(selector)?.value.trim() || '–';
 
-    form.addEventListener('submit', () => {
+    form.addEventListener('submit', (event) => {
       const selectedWindow = form.querySelector('input[name="zeitraum"]:checked')?.value || '–';
+      const validDesiredWindow = availableWindows(desiredDate.value).includes(selectedWindow);
+      const alternativeWindows = availableWindows(alternativeDate.value);
+      const validAlternative = alternativeDate.value
+        ? alternativeWindows.length > 0 && (!alternativeWindow.value || alternativeWindow.value === 'Flexibel'
+          || alternativeWindows.some((window) => windowLabels[window] === alternativeWindow.value))
+        : !alternativeWindow.value;
+
+      if (!validDesiredWindow || !validAlternative) {
+        event.preventDefault();
+        updateAvailableWindows();
+        windowMessage.textContent = 'Bitte wählen Sie einen freigegebenen Tag und Zeitraum aus.';
+        desiredDate.focus();
+        return;
+      }
       const lines = [
         'Neue Terminanfrage über nexentra.de',
         '',
