@@ -328,14 +328,14 @@
     const alternativeWindow = document.querySelector('#alternativzeitraum');
     const submitButton = form.querySelector('button[type="submit"]');
 
-    // Abgleich mit „Münster Termine“, Tagesreitern 07.–10.09.2026, Stand 06.09.2026.
-    // Montag ist gesperrt. Dienstag sind beide Mittagstermine bereits belegt.
+    // Freigabe Münster vom 22.–25.09.2026, Stand 16.09.2026.
     // Freigaben gelten für unverbindliche Anfragen, nicht als automatische Reservierung.
     const appointmentAvailability = {
       munster: {
-        '2026-09-08': ['Vormittags', 'Nachmittags'],
-        '2026-09-09': ['Vormittags', 'Mittags', 'Nachmittags'],
-        '2026-09-10': ['Vormittags', 'Mittags', 'Nachmittags']
+        '2026-09-22': ['Vormittags', 'Mittags', 'Nachmittags'],
+        '2026-09-23': ['Vormittags', 'Mittags', 'Nachmittags'],
+        '2026-09-24': ['Vormittags', 'Mittags', 'Nachmittags'],
+        '2026-09-25': ['Vormittags', 'Mittags', 'Nachmittags']
       }
     };
     const windowLabels = {
