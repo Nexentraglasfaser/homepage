@@ -418,7 +418,9 @@
       }
 
       if (dates.length) {
-        availabilityMessage.textContent = `Für ${enteredCity} sind aktuell ${dates.length} Tage freigegeben.`;
+        availabilityMessage.textContent = dates.length === 1
+          ? `Für ${enteredCity} ist aktuell 1 Tag freigegeben.`
+          : `Für ${enteredCity} sind aktuell ${dates.length} Tage freigegeben.`;
         availabilityMessage.classList.add('available');
       } else {
         availabilityMessage.textContent = `Für ${enteredCity} sind aktuell keine Termine freigegeben.`;
