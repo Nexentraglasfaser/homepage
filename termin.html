@@ -331,15 +331,21 @@
     const alternativeWindow = document.querySelector('#alternativzeitraum');
     const submitButton = form.querySelector('button[type="submit"]');
 
-    // Freigabe Münster vom 22.–25.09.2026, Stand 16.09.2026.
+    // Freigabe vom 27.09.2026: Bad Sassendorf 29.09.–01.10., Münster 02.10.2026.
     // Freigaben gelten für unverbindliche Anfragen, nicht als automatische Reservierung.
     const appointmentAvailability = {
+      'bad sassendorf': {
+        '2026-09-29': ['Vormittags', 'Mittags', 'Nachmittags'],
+        '2026-09-30': ['Vormittags', 'Mittags', 'Nachmittags'],
+        '2026-10-01': ['Vormittags', 'Mittags', 'Nachmittags']
+      },
       munster: {
-        '2026-09-22': ['Vormittags', 'Mittags', 'Nachmittags'],
-        '2026-09-23': ['Vormittags', 'Mittags', 'Nachmittags'],
-        '2026-09-24': ['Vormittags', 'Mittags', 'Nachmittags'],
-        '2026-09-25': ['Vormittags', 'Mittags', 'Nachmittags']
+        '2026-10-02': ['Vormittags', 'Mittags', 'Nachmittags']
       }
+    };
+    const cityLabels = {
+      'bad sassendorf': 'Bad Sassendorf',
+      munster: 'Münster'
     };
     const windowLabels = {
       Vormittags: 'Vormittags (08–12 Uhr)',
@@ -360,7 +366,7 @@
       day: '2-digit',
       month: '2-digit',
       year: 'numeric'
-    }).format(new Date(`${date}T12:00:00`));
+    }).format(new Date(`${date}T12:00:00`)) + ` – ${cityLabels[normalizeCity(cityInput.value)] || cityInput.value.trim()}`;
 
     const fillDateSelect = (select, dates, firstLabel) => {
       select.replaceChildren(new Option(firstLabel, ''));
