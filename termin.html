@@ -331,12 +331,11 @@
     const alternativeWindow = document.querySelector('#alternativzeitraum');
     const submitButton = form.querySelector('button[type="submit"]');
 
-    // Abgleich vom 28.09.2026: Dienstag vollständig ausgebucht.
-    // Bad Sassendorf 30.09.–01.10., Münster 02.10.2026.
+    // Abgleich vom 29.09.2026: Dienstag und Mittwoch gesperrt.
+    // Bad Sassendorf nur 01.10., Münster weiterhin 02.10.2026.
     // Freigaben gelten für unverbindliche Anfragen, nicht als automatische Reservierung.
     const appointmentAvailability = {
       'bad sassendorf': {
-        '2026-09-30': ['Vormittags', 'Mittags', 'Nachmittags'],
         '2026-10-01': ['Vormittags', 'Mittags', 'Nachmittags']
       },
       munster: {
