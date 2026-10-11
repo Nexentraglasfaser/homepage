@@ -331,16 +331,12 @@
     const alternativeWindow = document.querySelector('#alternativzeitraum');
     const submitButton = form.querySelector('button[type="submit"]');
 
-    // Freigabe vom 06.10.2026: Bad Sassendorf am 07. und 08.10.2026.
-    // Münster unverändert; keine neue Freigabe für Montag.
+    // Freigabe vom 11.10.2026: ausschließlich Münster am 14. und 15.10.2026.
     // Freigaben gelten für unverbindliche Anfragen, nicht als automatische Reservierung.
     const appointmentAvailability = {
-      'bad sassendorf': {
-        '2026-10-07': ['Vormittags', 'Mittags', 'Nachmittags'],
-        '2026-10-08': ['Vormittags', 'Mittags', 'Nachmittags']
-      },
       munster: {
-        '2026-10-02': ['Vormittags', 'Mittags', 'Nachmittags']
+        '2026-10-14': ['Vormittags', 'Mittags', 'Nachmittags'],
+        '2026-10-15': ['Vormittags', 'Mittags', 'Nachmittags']
       }
     };
     const cityLabels = {
