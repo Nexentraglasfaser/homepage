@@ -331,11 +331,10 @@
     const alternativeWindow = document.querySelector('#alternativzeitraum');
     const submitButton = form.querySelector('button[type="submit"]');
 
-    // Freigabe vom 11.10.2026: ausschließlich Münster am 14. und 15.10.2026.
+    // Freigabe vom 12.10.2026: ausschließlich Münster am 15.10.2026; Dienstag und Mittwoch geschlossen.
     // Freigaben gelten für unverbindliche Anfragen, nicht als automatische Reservierung.
     const appointmentAvailability = {
       munster: {
-        '2026-10-14': ['Vormittags'],
         '2026-10-15': ['Vormittags', 'Mittags', 'Nachmittags']
       }
     };
