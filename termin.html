@@ -331,12 +331,11 @@
     const alternativeWindow = document.querySelector('#alternativzeitraum');
     const submitButton = form.querySelector('button[type="submit"]');
 
-    // Freigabe vom 14.10.2026: Münster am 15.10.; Bad Sassendorf am 19., 21. und 22.10.2026. Dienstag, 20.10., bleibt geschlossen.
+    // Stand 18.10.2026: Münster geschlossen, bis die neue Einsatzplanung freigegeben wird.
+    // Bad Sassendorf am 19., 21. und 22.10.2026. Dienstag, 20.10., bleibt geschlossen.
     // Freigaben gelten für unverbindliche Anfragen, nicht als automatische Reservierung.
     const appointmentAvailability = {
-      munster: {
-        '2026-10-15': ['Vormittags', 'Mittags', 'Nachmittags']
-      },
+      munster: {},
       'bad sassendorf': {
         '2026-10-19': ['Vormittags', 'Mittags', 'Nachmittags'],
         '2026-10-21': ['Vormittags', 'Mittags', 'Nachmittags'],
