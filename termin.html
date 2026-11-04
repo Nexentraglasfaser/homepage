@@ -331,17 +331,19 @@
     const alternativeWindow = document.querySelector('#alternativzeitraum');
     const submitButton = form.querySelector('button[type="submit"]');
 
-    // Freigabe 01.11.2026: Münster am Freitag, 06.11.2026.
     // Freigaben gelten für unverbindliche Anfragen, nicht als automatische Reservierung.
     const appointmentAvailability = {
       munster: {
-        '2026-11-06': ['Mittags', 'Nachmittags']
+        '2026-11-06': ['Mittags', 'Nachmittags'],
+        '2026-11-09': ['Vormittags', 'Mittags', 'Nachmittags']
       },
       warburg: {
         '2026-11-04': ['Nachmittags'],
         '2026-11-05': ['Vormittags', 'Mittags', 'Nachmittags']
       },
-      'bad sassendorf': {}
+      'bad sassendorf': {
+        '2026-11-07': ['Vormittags', 'Mittags', 'Nachmittags']
+      }
     };
     const cityLabels = {
       'bad sassendorf': 'Bad Sassendorf',
