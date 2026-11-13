@@ -331,12 +331,13 @@
     const alternativeWindow = document.querySelector('#alternativzeitraum');
     const submitButton = form.querySelector('button[type="submit"]');
 
-    // Freigabe 13.11.2026: ausschließlich Dortmund, Montag ab 13 Uhr und Dienstag ganztägig.
+    // Freigabe 13.11.2026: ausschließlich Dortmund, Montag ab 13 Uhr sowie Dienstag und Mittwoch ganztägig.
     // Unverbindliche Anfragen; konkrete Zeiten und Zugang werden anschließend bestätigt.
     const appointmentAvailability = {
       dortmund: {
         '2026-11-16': ['Mittags', 'Nachmittags'],
-        '2026-11-17': ['Vormittags', 'Mittags', 'Nachmittags']
+        '2026-11-17': ['Vormittags', 'Mittags', 'Nachmittags'],
+        '2026-11-18': ['Vormittags', 'Mittags', 'Nachmittags']
       }
     };
     const cityLabels = { dortmund: 'Dortmund' };
