@@ -268,11 +268,11 @@
             <div class="time-options">
               <div class="time-option">
                 <input id="vormittags" type="radio" name="zeitraum" value="Vormittags" required>
-                <label for="vormittags">Vormittags <small>08–12 Uhr</small></label>
+                <label for="vormittags">Vormittags <small>07:30–12:30 Uhr</small></label>
               </div>
               <div class="time-option">
                 <input id="mittags" type="radio" name="zeitraum" value="Mittags">
-                <label for="mittags">Mittags <small>12–14 Uhr</small></label>
+                <label for="mittags">Früher Nachmittag <small>13–14 Uhr</small></label>
               </div>
               <div class="time-option">
                 <input id="nachmittags" type="radio" name="zeitraum" value="Nachmittags">
@@ -331,28 +331,18 @@
     const alternativeWindow = document.querySelector('#alternativzeitraum');
     const submitButton = form.querySelector('button[type="submit"]');
 
-    // Freigaben gelten für unverbindliche Anfragen, nicht als automatische Reservierung.
+    // Freigabe 13.11.2026: ausschließlich Dortmund, Montag ab 13 Uhr und Dienstag ganztägig.
+    // Unverbindliche Anfragen; konkrete Zeiten und Zugang werden anschließend bestätigt.
     const appointmentAvailability = {
-      munster: {
-        '2026-11-06': ['Mittags', 'Nachmittags'],
-        '2026-11-09': ['Vormittags', 'Mittags', 'Nachmittags']
-      },
-      warburg: {
-        '2026-11-04': ['Nachmittags'],
-        '2026-11-05': ['Vormittags', 'Mittags', 'Nachmittags']
-      },
-      'bad sassendorf': {
-        '2026-11-09': ['Vormittags', 'Mittags', 'Nachmittags']
+      dortmund: {
+        '2026-11-16': ['Mittags', 'Nachmittags'],
+        '2026-11-17': ['Vormittags', 'Mittags', 'Nachmittags']
       }
     };
-    const cityLabels = {
-      'bad sassendorf': 'Bad Sassendorf',
-      warburg: 'Warburg',
-      munster: 'Münster'
-    };
+    const cityLabels = { dortmund: 'Dortmund' };
     const windowLabels = {
-      Vormittags: 'Vormittags (08–12 Uhr)',
-      Mittags: 'Mittags (12–14 Uhr)',
+      Vormittags: 'Vormittags (07:30–12:30 Uhr)',
+      Mittags: 'Früher Nachmittag (13–14 Uhr)',
       Nachmittags: 'Nachmittags (14–18 Uhr)'
     };
 
@@ -465,7 +455,7 @@
         `Kunden-/CS-ID: ${value('#csid')}`,
         '',
         `Wunschtag: ${desiredDate.value ? formatDate(desiredDate.value) : '–'}`,
-        `Bevorzugter Zeitraum: ${selectedWindow}`,
+        `Bevorzugter Zeitraum: ${windowLabels[selectedWindow] || selectedWindow}`,
         `Alternativer Tag: ${alternativeDate.value ? formatDate(alternativeDate.value) : '–'}`,
         `Alternativer Zeitraum: ${value('#alternativzeitraum')}`,
         '',
