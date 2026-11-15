@@ -16,3 +16,11 @@ export function matchesOperationSearch(r:OperationRecord,query:string):boolean {
  if(/^[+\d\s()./-]+$/.test(query.trim())&&digits.length>=5&&phones.some(p=>p.includes(digits)||p.replace(/^49/,'0').includes(digits)))return true;
  return terms.every(term=>text.includes(term));
 }
+
+export function operationSearchScore(r:OperationRecord,query:string):number {
+ const q=normalizeSearch(query),terms=q.split(/\s+/).filter(Boolean);
+ if(!terms.length)return 0;
+ const street=normalizeSearch(r.street),number=normalizeSearch(r.number);
+ const primary=normalizeSearch([r.street,r.number,r.customer,r.reference,r.project,r.nvt].join(' '));
+ return (street&&q.includes(street)?40:0)+(number&&terms.includes(number)?30:0)+terms.filter(t=>primary.includes(t)).length;
+}
