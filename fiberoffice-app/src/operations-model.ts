@@ -32,6 +32,7 @@ export function classify(r:OperationRecord):{status:OperationStatus;basis:string
  return {status:'Klärung',basis:'Kein eindeutiger Montageabschluss oder aktiver Fehler im Statusfeld. „HA gebaut“ allein genügt nicht.'};
 }
 export function appointmentStatus(v:string):OperationStatus {
+ if(/^Geplanter Termin: \d{4}-\d{2}-\d{2} \|/.test(v))return 'Terminiert';
  if(/nicht terminiert|noch zu terminieren|neu terminieren|nicht geplant|abgesagt|storno|aufgehoben/i.test(v))return 'Offen';
  if(/\bgeplant\b/i.test(v))return 'Terminiert';
  if(/rückmeldung offen|unzustellbar/i.test(v))return 'Offen';
@@ -55,6 +56,7 @@ export function isScheduled(r:OperationRecord) {
  const status=classify(r).status;
  if(status==='Fertiggestellt'||status==='Storniert')return false;
  const text=r.overrides.appointment ?? r.appointment;
+ if(/^Geplanter Termin: \d{4}-\d{2}-\d{2} \|/.test(text))return true;
  if(/abgesagt|storno|aufgehoben|nicht terminiert|noch zu terminieren|neu terminieren/i.test(text))return false;
  return appointmentStatus(text)==='Terminiert' || isScheduledGBox(r)
   || (r.overrides.appointment===undefined && status==='Terminiert');
