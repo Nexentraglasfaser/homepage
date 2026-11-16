@@ -1,4 +1,5 @@
 import {createClient,type SupabaseClient} from '@supabase/supabase-js';
+import {inspectProjectFile} from './project-files';
 import {validateFileContent} from './domain';
 let client:SupabaseClient|null=null;
 export const isLocal=()=>new URLSearchParams(location.search).get('workspace')==='local';
@@ -12,6 +13,21 @@ export async function operationApi(path:string,options?:RequestInit){
  if(isLocal()){const r=await fetch('/api/'+path,options),d=await r.json();if(!r.ok)throw Error(d.error||'Anfrage fehlgeschlagen');return d;}
  const c=await operationsClient();const rpc=async(name:string,args:Record<string,unknown>={})=>{const {data,error}=await c.rpc(name,args);if(error)throw Error(error.message);return data;};
  const input=typeof options?.body==='string'?JSON.parse(options.body):{};
+ if(path==='project-files')return all(c,'ops_project_files');
+ if(path.startsWith('project-upload?')){
+  const params=new URLSearchParams(path.split('?')[1]),projectId=params.get('project')!,category=params.get('category')!;
+  const file=options?.body as File;const {mime,sha256}=await inspectProjectFile(file);
+  const existing=await c.from('ops_project_files').select('id').eq('project_id',projectId).eq('sha256',sha256).maybeSingle();if(existing.error)throw existing.error;if(existing.data)return {duplicate:true};
+  const user=(await c.auth.getUser()).data.user;if(!user)throw Error('Bitte neu anmelden.');
+  const m=await c.from('ops_members').select('tenant_id').eq('user_id',user.id).single();if(m.error)throw m.error;
+  const filePath=`${m.data.tenant_id}/${projectId}/${crypto.randomUUID()}`;
+  const up=await c.storage.from('project-files').upload(filePath,file,{contentType:mime});if(up.error)throw up.error;
+  try{await rpc('ops_register_project_file',{p_project:projectId,p_path:filePath,p_name:file.name,p_category:category,p_sha256:sha256});}catch(e){await c.storage.from('project-files').remove([filePath]);throw e;}return {ok:true};
+ }
+ if(path.startsWith('project-file?')){
+  const id=new URLSearchParams(path.split('?')[1]).get('id');const f=await c.from('ops_project_files').select('path,name').eq('id',id).single();if(f.error)throw f.error;
+  const s=await c.storage.from('project-files').createSignedUrl(f.data.path,60,{download:f.data.name});if(s.error)throw s.error;return {url:s.data.signedUrl};
+ }
  if(path==='me')return rpc('ops_me');
  if(path==='projects/create')return rpc('ops_create_project',{p_id:input.id,p_name:input.name,p_city:input.city,p_client:input.client,p_code:input.code,p_note:input.note});
  if(path==='addresses/import')return rpc('ops_import_addresses',{p_project:input.projectId,p_request:input.requestId,p_rows:input.rows,p_file:input.file,p_sheet:input.sheet});
