@@ -46,3 +46,19 @@ it('new GU-created projects await admin sharing, including retries',async()=>{aw
 it('NU requires both list access and address assignment',async()=>{await grant('nu@test.invalid',[id(30)]);expect((await as(3,'select * from public.ops_records')).rows).toHaveLength(0);await db.exec(`update public.ops_records set assigned_user_id='${id(3)}' where project='Duraku'`);expect((await as(3,'select * from public.ops_records')).rows).toHaveLength(2);expect((await as(3,'select * from public.ops_projects')).rows).toHaveLength(1);await grant('nu@test.invalid',[]);expect((await as(3,'select * from public.ops_records')).rows).toHaveLength(0);});
 
 it('project document access follows the same list selection',async()=>{await grant('gu@test.invalid',[id(30)]);expect((await as(2,'select private.ops_project_file_access($1,false) as allowed',[id(31)])).rows[0].allowed).toBe(false);expect((await as(2,'select private.ops_project_file_access($1,true) as allowed',[id(31)])).rows[0].allowed).toBe(false);expect((await as(2,'select private.ops_project_file_access($1,true) as allowed',[id(30)])).rows[0].allowed).toBe(true);});
+
+it('Auth provisioning commits membership, selected lists and audit together',async()=>{
+ await db.exec(`alter table auth.users add column raw_app_meta_data jsonb;alter table auth.users add column raw_user_meta_data jsonb;`);
+ await db.exec(readFileSync(new URL('../supabase/migrations/202611170002_user_creation.sql',import.meta.url),'utf8'));
+ const config={fiber_provision:{actor:id(1),role:'gu',projects:[id(30)],canEditStatus:false}};
+ await db.query('insert into auth.users(id,email,email_confirmed_at,raw_app_meta_data) values($1,$2,now(),$3)',[id(60),'new@test.invalid',JSON.stringify(config)]);
+ expect((await as(60,'select name from public.ops_projects')).rows).toEqual([{name:'Duraku'}]);
+ expect((await as(60,'select public.ops_me() as me')).rows[0].me.canEditStatus).toBe(false);
+ expect((await as(1,"select * from public.ops_audits where after_data->>'action'='Benutzer angelegt'")).rows).toHaveLength(1);
+ for(const patch of [{actor:id(2)},{role:'admin'},{projects:[id(999)]}]){
+ await expect(db.query('insert into auth.users(id,email,email_confirmed_at,raw_app_meta_data) values($1,$2,now(),$3)',[id(61),'bad@test.invalid',JSON.stringify({fiber_provision:{...config.fiber_provision,...patch}})])).rejects.toThrow();
+ expect((await db.query('select * from auth.users where id=$1',[id(61)])).rows).toHaveLength(0);
+ }
+ await db.query('insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values($1,$2,now(),$3)',[id(62),'signup@test.invalid',JSON.stringify(config)]);
+ expect((await db.query('select * from public.ops_members where user_id=$1',[id(62)])).rows).toHaveLength(0);
+});
