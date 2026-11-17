@@ -1,0 +1,48 @@
+import {PGlite} from '@electric-sql/pglite';
+import {beforeAll,afterAll,it,expect} from 'vitest';
+import {readFileSync} from 'node:fs';
+const id=(n:number)=>`22222222-2222-4222-8222-${String(n).padStart(12,'0')}`;
+let db:PGlite;let project:string;let batch=100;
+async function as(n:number,sql:string,args:unknown[]=[]){await db.exec(`set role authenticated;select set_config('request.jwt.claim.sub','${id(n)}',false)`);try{return await db.query<any>(sql,args);}finally{await db.exec('reset role');}}
+const create=(user:number,name:string,n:number)=>as(user,'select public.ops_create_project($1,$2,$3,$4,$5,$6) as result',[id(n),name,'Testort','Duraku','P-1','Testprojekt']);
+const row=(n:string,extra:Record<string,unknown>={})=>({street:'Teststraße',number:n,city:'Testort',reference:'ID-'+n,sourceValues:{Status:'Fertiggestellt'},...extra});
+const imp=(user:number,rows:unknown[],request=id(++batch),p=project)=>as(user,'select public.ops_import_addresses($1,$2,$3,$4,$5) as result',[p,request,JSON.stringify(rows),'Kunden.xlsx','Kunden']);
+beforeAll(async()=>{
+ db=new PGlite();await db.exec(`create role authenticated;create role anon;create schema auth;create schema storage;create table auth.users(id uuid primary key,email text,email_confirmed_at timestamptz);create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;grant usage on schema auth,public,storage to authenticated,anon;create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]);create table storage.objects(id uuid default gen_random_uuid(),bucket_id text,name text,owner_id text,metadata jsonb);alter table storage.objects enable row level security;grant select,insert,delete,update on storage.objects to authenticated;`);
+ for(const f of ['202611140001_core.sql','202611140002_storage.sql','202611140004_operations.sql'])await db.exec(readFileSync(new URL('../supabase/migrations/'+f,import.meta.url),'utf8'));
+ await db.exec(`insert into auth.users values('${id(1)}','admin@test.invalid',now()),('${id(2)}','gu@test.invalid',now()),('${id(3)}','nu@test.invalid',now()),('${id(4)}','foreign@test.invalid',now()),('${id(5)}','unconfirmed@test.invalid',null);insert into public.tenants values('${id(10)}','A'),('${id(11)}','B');insert into public.ops_members values('${id(1)}','${id(10)}','admin@test.invalid','admin',true),('${id(2)}','${id(10)}','gu@test.invalid','gu',false),('${id(3)}','${id(10)}','nu@test.invalid','nu',true),('${id(4)}','${id(11)}','foreign@test.invalid','gu',false),('${id(5)}','${id(10)}','unconfirmed@test.invalid','gu',false);insert into public.ops_records(tenant_id,id,project,payload) values('${id(10)}','legacy','Bestand','{"id":"legacy","project":"Bestand","street":"Altweg","number":"1","overrides":{"status":"Fertiggestellt"}}');`);
+ for(const f of ['202611150001_project_import.sql','202611150002_import_indexes.sql','202611150003_status_context.sql'])await db.exec(readFileSync(new URL('../supabase/migrations/'+f,import.meta.url),'utf8'));
+});
+
+beforeAll(async()=>{
+ await create(1,'Duraku',30);await create(1,'Recklinghausen-Süd',31);project=id(30);
+ await imp(1,[row('1')],id(600),id(30));await imp(1,[row('2')],id(601),id(31));
+ await db.exec(`insert into public.ops_history select tenant_id,id,'{}' from public.ops_records on conflict do nothing;insert into public.ops_sources values('${id(10)}','{"secret":"all-project-source"}');insert into public.ops_files(tenant_id,record_id,path,name,mime,size) select tenant_id,id,tenant_id||'/'||id||'/test.pdf','test.pdf','application/pdf',1 from public.ops_records;insert into storage.objects(bucket_id,name) select 'operations-files',path from public.ops_files;`);
+ await db.exec(readFileSync(new URL('../supabase/migrations/202611160001_project_files.sql',import.meta.url),'utf8'));
+ await db.exec(readFileSync(new URL('../supabase/migrations/202611170001_project_access.sql',import.meta.url),'utf8'));
+});
+afterAll(async()=>{await db?.close();});
+const grant=(email:string,ids:string[])=>as(1,'select public.ops_project_permissions($1,$2)',[email,ids]);
+it('default deny; administrator retains all projects',async()=>{expect((await as(2,'select * from public.ops_projects')).rows).toHaveLength(0);expect((await as(1,'select * from public.ops_projects')).rows).toHaveLength(3);});
+it('explicit list selection scopes all data surfaces',async()=>{
+ await grant('gu@test.invalid',[id(30)]);
+ expect((await as(2,'select name from public.ops_projects')).rows).toEqual([{name:'Duraku'}]);
+ for(const table of ['ops_records','ops_history','ops_files','ops_audits'])expect((await as(2,`select * from public.${table}`)).rows).toHaveLength(1);
+ expect((await as(2,'select * from storage.objects')).rows).toHaveLength(1);
+ expect((await as(2,'select * from public.ops_sources')).rows).toHaveLength(0);
+ expect((await as(1,'select public.ops_me() as me')).rows[0].me.members.find((m:any)=>m.email==='gu@test.invalid').projectIds).toEqual([id(30)]);
+});
+it('GU cannot self-grant and invalid admin grants roll back atomically',async()=>{
+ await expect(as(2,'select public.ops_project_permissions($1,$2)',['gu@test.invalid',[id(31)]])).rejects.toThrow('Nur Nexentra');
+ await expect(as(2,`insert into public.ops_project_members values('${id(10)}','${id(2)}','${id(31)}')`)).rejects.toThrow();
+ await expect(grant('gu@test.invalid',[id(30),id(999)])).rejects.toThrow('nicht verfügbar');
+ await expect(grant('foreign@test.invalid',[id(30)])).rejects.toThrow('Ungültiger');
+ expect((await as(2,'select name from public.ops_projects')).rows).toEqual([{name:'Duraku'}]);
+});
+it('hidden project imports and replay requests are denied',async()=>{await expect(imp(2,[row('2')],id(601),id(31))).rejects.toThrow('nicht verfügbar');expect((await imp(2,[row('3')])).rows[0].result.inserted).toBe(1);});
+it('status permission never overrides project scope',async()=>{await db.exec(`update public.ops_members set can_edit_status=true where user_id='${id(2)}'`);const r=(await as(1,"select id from public.ops_records where project='Recklinghausen-Süd'")).rows[0];await expect(as(2,'select public.ops_update($1,1,$2)',[r.id,JSON.stringify({status:'Fertiggestellt',note:'Test'})])).rejects.toThrow();});
+it('multiple projects work and revocation affects the existing session',async()=>{await grant('gu@test.invalid',[id(30),id(31)]);expect((await as(2,'select * from public.ops_projects')).rows).toHaveLength(2);await grant('gu@test.invalid',[]);for(const t of ['ops_projects','ops_records','ops_history','ops_files','ops_audits'])expect((await as(2,`select * from public.${t}`)).rows).toHaveLength(0);expect((await as(2,'select * from storage.objects')).rows).toHaveLength(0);});
+it('new GU-created projects await admin sharing, including retries',async()=>{await create(2,'Neu',33);expect((await as(2,'select * from public.ops_projects')).rows).toHaveLength(0);await expect(create(2,'Neu',33)).rejects.toThrow();await expect(imp(2,[row('4')],id(605),id(33))).rejects.toThrow('nicht verfügbar');});
+it('NU requires both list access and address assignment',async()=>{await grant('nu@test.invalid',[id(30)]);expect((await as(3,'select * from public.ops_records')).rows).toHaveLength(0);await db.exec(`update public.ops_records set assigned_user_id='${id(3)}' where project='Duraku'`);expect((await as(3,'select * from public.ops_records')).rows).toHaveLength(2);expect((await as(3,'select * from public.ops_projects')).rows).toHaveLength(1);await grant('nu@test.invalid',[]);expect((await as(3,'select * from public.ops_records')).rows).toHaveLength(0);});
+
+it('project document access follows the same list selection',async()=>{await grant('gu@test.invalid',[id(30)]);expect((await as(2,'select private.ops_project_file_access($1,false) as allowed',[id(31)])).rows[0].allowed).toBe(false);expect((await as(2,'select private.ops_project_file_access($1,true) as allowed',[id(31)])).rows[0].allowed).toBe(false);expect((await as(2,'select private.ops_project_file_access($1,true) as allowed',[id(30)])).rows[0].allowed).toBe(true);});

@@ -31,12 +31,13 @@ export async function operationApi(path:string,options?:RequestInit){
  if(path==='me')return rpc('ops_me');
  if(path==='projects/create')return rpc('ops_create_project',{p_id:input.id,p_name:input.name,p_city:input.city,p_client:input.client,p_code:input.code,p_note:input.note});
  if(path==='addresses/import')return rpc('ops_import_addresses',{p_project:input.projectId,p_request:input.requestId,p_rows:input.rows,p_file:input.file,p_sheet:input.sheet});
+ if(path==='project-permissions')return rpc('ops_project_permissions',{p_email:input.email,p_projects:input.projectIds});
  if(path==='permissions')return rpc('ops_permissions',{p_email:input.email,p_allowed:input.canEditStatus});
  if(path==='update')return rpc('ops_update',{p_id:input.id,p_version:input.version,p_patch:input.patch});
  if(path==='operations'){
   const [records,files,sources,audits,histories,projects]=await Promise.all(['ops_records','ops_files','ops_sources','ops_audits','ops_history','ops_projects'].map(t=>all(c,t)));
-  if(!sources.length)throw Error('Projektbestand wird eingerichtet.');
-  return {projects,source:sources[0].payload,records:records.map(r=>({...r.payload,history:histories.find(h=>h.id===r.id)?.payload||[],version:r.version,attachments:files.filter(f=>f.record_id===r.id).map(f=>({...f,createdAt:f.created_at}))})),audits:audits.sort((a,b)=>b.at.localeCompare(a.at)).map(a=>({...a,recordId:a.record_id,before:a.before_data,after:a.after_data}))};
+  const source=sources[0]?.payload||{title:'Freigegebene Projektlisten',url:'',modifiedAt:'',importedAt:'',sha256:'',sheets:0,scope:'Nur freigegebene Projekte'};
+  return {projects,source,records:records.map(r=>({...r.payload,history:histories.find(h=>h.id===r.id)?.payload||[],version:r.version,attachments:files.filter(f=>f.record_id===r.id).map(f=>({...f,createdAt:f.created_at}))})),audits:audits.sort((a,b)=>b.at.localeCompare(a.at)).map(a=>({...a,recordId:a.record_id,before:a.before_data,after:a.after_data}))};
  }
  if(path.startsWith('upload?')){
   const id=new URLSearchParams(path.split('?')[1]).get('id')!;const file=options?.body as File;await validateFileContent(file);

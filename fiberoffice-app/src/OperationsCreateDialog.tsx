@@ -6,7 +6,7 @@ import type {OperationRecord} from './operations-model';
 import {download} from './files';
 type Result={previewSkipped?:number;inserted:number;total:number;project:string;skipped:{row:number;address:string;reason:string}[]};
 const post=(path:string,value:unknown)=>operationApi(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(value)});
-export function OperationsCreateDialog({mode,projects,records,initialProject,close,saved}:{mode:'project'|'address'|'import';projects:OpsProject[];records:OperationRecord[];initialProject:string;close:()=>void;saved:(project:string)=>Promise<void>}){
+export function OperationsCreateDialog({mode,isAdmin,projects,records,initialProject,close,saved}:{mode:'project'|'address'|'import';isAdmin:boolean;projects:OpsProject[];records:OperationRecord[];initialProject:string;close:()=>void;saved:(project:string)=>Promise<void>}){
  const ref=useRef<HTMLDialogElement>(null),fileRef=useRef<HTMLInputElement>(null),request=useRef(crypto.randomUUID());
  const [tab,setTab]=useState(mode),[projectId,setProjectId]=useState(projects.find(p=>p.name===initialProject)?.id||projects[0]?.id||''),[creating,setCreating]=useState(false),[addedProjects,setAddedProjects]=useState<OpsProject[]>([]);
  const [name,setName]=useState(''),[city,setCity]=useState(''),[client,setClient]=useState(''),[code,setCode]=useState(''),[projectNote,setProjectNote]=useState('');
@@ -16,7 +16,7 @@ export function OperationsCreateDialog({mode,projects,records,initialProject,clo
  useEffect(()=>{ref.current?.showModal();return()=>ref.current?.close();},[]);
  const changed=()=>{request.current=crypto.randomUUID();setResult(null);setStage('mapping');setError('');};
  const projectSave=async()=>{if(!name.trim()||!city.trim()){setError('Bitte Projektname und Ort eingeben.');return;}setBusy(true);setError('');try{
-  const p=await post('projects/create',{id:request.current,name,city,client,code,note:projectNote});setAddedProjects(a=>[...a,p]);setProjectId(p.id);setCreating(false);await saved(p.name);setTab('import');changed();
+  const p=await post('projects/create',{id:request.current,name,city,client,code,note:projectNote});if(!isAdmin){await saved('');setError('Projekt angelegt. Nexentra muss dir die neue Liste unter Zugänge & Rechte freigeben, bevor du Adressen importieren kannst.');setName('');request.current=crypto.randomUUID();return;}setAddedProjects(a=>[...a,p]);setProjectId(p.id);setCreating(false);await saved(p.name);setTab('import');changed();
  }catch(e){setError((e as Error).message);}finally{setBusy(false);}};
  const loadFile=async(file?:File)=>{if(!file)return;setBusy(true);setError('');setSheets([]);setFileName('');try{const workbook=await readImportWorkbook(file);setSheets(workbook);setSheetIndex(0);setHeaderIndex(0);setMapping(guessMapping(workbook[0].rows[0]||[]));setFileName(file.name);changed();}catch(e){setError((e as Error).message);}finally{setBusy(false);if(fileRef.current)fileRef.current.value='';}};
  const submit=async()=>{if(!project)return;let rows:ImportRow[];
