@@ -28,7 +28,8 @@ export async function operationApi(path:string,options?:RequestInit){
   const id=new URLSearchParams(path.split('?')[1]).get('id');const f=await c.from('ops_project_files').select('path,name').eq('id',id).single();if(f.error)throw f.error;
   const s=await c.storage.from('project-files').createSignedUrl(f.data.path,60,{download:f.data.name});if(s.error)throw s.error;return {url:s.data.signedUrl};
  }
- if(path==='users/create'){const {data,error}=await c.functions.invoke('create-workspace-user',{body:input});if(error){let message='Benutzer konnte nicht angelegt werden.';try{message=(await error.context.json()).error||message;}catch{}throw Error(message);}return data;}
+ if(path==='users/disabled')return rpc('ops_set_user_disabled',{p_email:input.email,p_disabled:input.disabled});
+ if(path==='users/create'||path==='users/password'){const {data,error}=await c.functions.invoke(path==='users/create'?'create-workspace-user':'reset-workspace-password',{body:input});if(error){let message='Benutzer konnte nicht angelegt werden.';try{message=(await error.context.json()).error||message;}catch{}throw Error(message);}return data;}
  if(path==='me')return rpc('ops_me');
  if(path==='projects/create')return rpc('ops_create_project',{p_id:input.id,p_name:input.name,p_city:input.city,p_client:input.client,p_code:input.code,p_note:input.note});
  if(path==='addresses/import')return rpc('ops_import_addresses',{p_project:input.projectId,p_request:input.requestId,p_rows:input.rows,p_file:input.file,p_sheet:input.sheet});

@@ -62,3 +62,33 @@ it('Auth provisioning commits membership, selected lists and audit together',asy
  await db.query('insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values($1,$2,now(),$3)',[id(62),'signup@test.invalid',JSON.stringify(config)]);
  expect((await db.query('select * from public.ops_members where user_id=$1',[id(62)])).rows).toHaveLength(0);
 });
+
+it('blocking denies old sessions on all surfaces; only admin can change access',async()=>{
+ await db.exec('create table auth.sessions(id uuid primary key,user_id uuid,created_at timestamptz);alter table auth.users add column encrypted_password text;');
+ await db.exec(readFileSync(new URL('../supabase/migrations/202611170003_user_management.sql',import.meta.url),'utf8'));
+ await expect(as(2,'select public.ops_set_user_disabled($1,true)',['nu@test.invalid'])).rejects.toThrow('Nur die Administration');
+ for(const email of ['admin@test.invalid','foreign@test.invalid'])await expect(as(1,'select public.ops_set_user_disabled($1,true)',[email])).rejects.toThrow('nicht verfügbar');
+ await as(1,'select public.ops_set_user_disabled($1,true)',['gu@test.invalid']);
+ await expect(as(2,'select public.ops_me()')).rejects.toThrow('Zugang gesperrt');
+ for(const table of ['ops_projects','ops_records','ops_history','ops_files','ops_audits','ops_project_files'])expect((await as(2,`select * from public.${table}`)).rows).toHaveLength(0);
+ expect((await as(2,'select * from storage.objects')).rows).toHaveLength(0);
+ await expect(imp(2,[row('88')])).rejects.toThrow();
+ const me=(await as(1,'select public.ops_me() as me')).rows[0].me;expect(me.members.find((m:any)=>m.email==='gu@test.invalid').disabled).toBe(true);
+});
+it('unblocking preserves lists but requires a genuinely new session, not refreshed JWT',async()=>{
+ await db.exec(`insert into auth.sessions values('${id(80)}','${id(2)}',now()-interval '1 hour');select set_config('request.jwt.claims','{"session_id":"${id(80)}"}',false);`);
+ await as(1,'select public.ops_set_user_disabled($1,false)',['gu@test.invalid']);
+ await expect(as(2,'select public.ops_me()')).rejects.toThrow('Anmeldung abgelaufen');
+ await db.exec(`insert into auth.sessions values('${id(81)}','${id(2)}',now()+interval '1 second');select set_config('request.jwt.claims','{"session_id":"${id(81)}"}',false);`);
+ expect((await as(2,'select name from public.ops_projects')).rows).toEqual([{name:'Duraku'}]);
+ await db.exec("select set_config('request.jwt.claims','{}',false)");
+});
+it('password reset atomically invalidates sessions, audits without secrets and keeps a blocked user blocked',async()=>{
+ await as(1,'select public.ops_set_user_disabled($1,true)',['new@test.invalid']);
+ const metadata={fiber_password_reset:{actor:id(1),requestId:'reset-1'}};
+ await db.exec('begin');await db.query('update auth.users set encrypted_password=$1 where id=$2',['hash-only',id(60)]);await db.query('update auth.users set raw_app_meta_data=$1 where id=$2',[JSON.stringify(metadata),id(60)]);await db.exec('commit');
+ const m=(await db.query('select disabled,access_after from public.ops_members where user_id=$1',[id(60)])).rows[0] as any;expect(m.disabled).toBe(true);expect(m.access_after).toBeTruthy();
+ const audits=(await as(1,"select after_data from public.ops_audits where after_data->>'action'='Passwort zurückgesetzt'")).rows;expect(audits).toHaveLength(1);expect(JSON.stringify(audits)).not.toContain('hash-only');
+ await expect(db.query('update auth.users set encrypted_password=$1,raw_app_meta_data=$2 where id=$3',['bad',JSON.stringify({fiber_password_reset:{actor:id(2),requestId:'reset-2'}}),id(60)])).rejects.toThrow('Nur die Administration');
+ expect((await db.query('select encrypted_password from auth.users where id=$1',[id(60)])).rows[0]).toEqual({encrypted_password:'hash-only'});
+});
