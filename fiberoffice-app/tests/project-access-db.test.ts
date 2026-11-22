@@ -129,3 +129,17 @@ it('small sync fingerprints follow RLS, updates and revoked membership',async()=
  const next=await stamp(90);await grant('planner@test.invalid',[]);expect((await stamp(90)).token).not.toBe(next.token);
  await as(1,'select public.ops_set_user_disabled($1,true)',['planner@test.invalid']);await expect(stamp(90)).rejects.toThrow('Zugang gesperrt');
 });
+
+it('provisions when Auth saves protected metadata after INSERT, without overwriting later permissions',async()=>{
+ await db.exec(readFileSync(new URL('../supabase/migrations/202611220003_complete_user_provisioning.sql',import.meta.url),'utf8'));
+ await db.query('insert into auth.users(id,email,email_confirmed_at) values($1,$2,now())',[id(92),'delayed@test.invalid']);
+ expect((await db.query('select * from public.ops_members where user_id=$1',[id(92)])).rows).toHaveLength(0);
+ const meta={fiber_provision:{actor:id(1),role:'planner',projects:[id(30)],canEditStatus:false}};
+ await db.query('update auth.users set raw_app_meta_data=$1 where id=$2',[JSON.stringify(meta),id(92)]);
+ expect((await as(92,'select public.ops_me() as me')).rows[0].me.role).toBe('planner');
+ expect((await as(92,'select name from public.ops_projects')).rows).toEqual([{name:'Duraku'}]);
+ await grant('delayed@test.invalid',[]);
+ await db.query('update auth.users set raw_app_meta_data=$1 where id=$2',[JSON.stringify(meta),id(92)]);
+ expect((await as(92,'select * from public.ops_projects')).rows).toHaveLength(0);
+ expect((await as(1,"select * from public.ops_audits where after_data->>'email'='delayed@test.invalid' and after_data->>'action'='Benutzer angelegt'")).rows).toHaveLength(1);
+});
