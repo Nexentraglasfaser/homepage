@@ -331,16 +331,24 @@
     const alternativeWindow = document.querySelector('#alternativzeitraum');
     const submitButton = form.querySelector('button[type="submit"]');
 
-    // Freigabe 13.11.2026: ausschließlich Dortmund, Montag ab 13 Uhr sowie Dienstag und Mittwoch ganztägig.
+    // Freigabe 22.11.2026: Recklinghausen vom 24. bis 27. November.
     // Unverbindliche Anfragen; konkrete Zeiten und Zugang werden anschließend bestätigt.
-    const appointmentAvailability = {
-      dortmund: {
-        '2026-11-16': ['Mittags', 'Nachmittags'],
-        '2026-11-17': ['Vormittags', 'Mittags', 'Nachmittags'],
-        '2026-11-18': ['Vormittags', 'Mittags', 'Nachmittags']
-      }
+    const recklinghausenDates = {
+      '2026-11-24': ['Vormittags', 'Mittags', 'Nachmittags'],
+      '2026-11-25': ['Vormittags', 'Mittags', 'Nachmittags'],
+      '2026-11-26': ['Vormittags', 'Mittags', 'Nachmittags'],
+      '2026-11-27': ['Vormittags', 'Mittags', 'Nachmittags']
     };
-    const cityLabels = { dortmund: 'Dortmund' };
+    const appointmentAvailability = {
+      recklinghausen: recklinghausenDates,
+      'recklinghausen-sud': recklinghausenDates,
+      'recklinghausen sud': recklinghausenDates
+    };
+    const cityLabels = {
+      recklinghausen: 'Recklinghausen',
+      'recklinghausen-sud': 'Recklinghausen-Süd',
+      'recklinghausen sud': 'Recklinghausen-Süd'
+    };
     const windowLabels = {
       Vormittags: 'Vormittags (07:30–12:30 Uhr)',
       Mittags: 'Früher Nachmittag (13–14 Uhr)',
