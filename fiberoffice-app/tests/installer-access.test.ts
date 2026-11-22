@@ -1,5 +1,5 @@
 import {expect,it} from 'vitest';
-import {canUseInstallerApp} from '../src/installer-access';
+import {canUseInstallerApp,installerLoginEmail} from '../src/installer-access';
 import {dayJobs} from '../src/StaffDay';
 import type {OperationRecord} from '../src/operations-model';
 it('limits the app to installers and administrative preview',()=>{
@@ -9,4 +9,10 @@ it('limits the app to installers and administrative preview',()=>{
 });
 it('does not turn a cleared day filter into a list of unscheduled customers',()=>{
  expect(dayJobs([{id:'example',date:'',overrides:{},project:'Demo'} as OperationRecord],'','')).toEqual([]);
+});
+
+it('resolves the requested crew login while preserving personal email logins',()=>{
+ expect(installerLoginEmail(' Nexentra ')).toBe('monteur@nexentra.de');
+ expect(installerLoginEmail('PERSON@EXAMPLE.ORG')).toBe('person@example.org');
+ expect(installerLoginEmail('unknown')).toBe('unknown');
 });
