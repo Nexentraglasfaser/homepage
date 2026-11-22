@@ -13,7 +13,7 @@ import {matchesOperationSearch,operationSearchScore} from './operations-search';
 import {statusAfterSteps,workResultNote,removeAppointment} from './operations-workflow';
 import {inOverview,overviewStatus,overviewStatuses,overviewSummary} from './operations-overview';
 import {OperationsCreateDialog} from './OperationsCreateDialog';
-type Me={email:string;role:'admin'|'gu'|'nu'|'planner'|'installer';canEdit:boolean;canEditStatus:boolean;members?:{email:string;role:string;disabled?:boolean;canEditStatus:boolean;projectIds?:string[]}[]};
+export type Me={email:string;role:'admin'|'gu'|'nu'|'planner'|'installer';canEdit:boolean;canEditStatus:boolean;members?:{email:string;role:string;disabled?:boolean;canEditStatus:boolean;projectIds?:string[]}[]};
 import {operationApi as api,operationsClient,isLocal} from './operations-client';
 const post=(path:string,value:unknown)=>api(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(value)});
 export function OperationsApp(){
@@ -70,7 +70,7 @@ export function OperationsApp(){
  {selected&&<RecordDialog record={selected} data={data} me={me} close={()=>setSelected(null)} saved={async()=>{await refresh();setSelected(null);setToast('Änderung gespeichert. Alle berechtigten Zugänge sehen den neuen Stand.');}}/>}</div>;
 }
 function StatusBadge({status}:{status:string}){return <span className={'ops-status '+(status==='Fertiggestellt'?'done':status==='Fehlerstelle'?'fault':status==='Terminiert'?'scheduled':'')}>{status}</span>;}
-function RecordDialog({record:r,data,me,close,saved}:{record:OperationRecord;data:OperationsData;me:Me;close:()=>void;saved:()=>Promise<void>}){
+export function RecordDialog({record:r,data,me,close,saved}:{record:OperationRecord;data:OperationsData;me:Me;close:()=>void;saved:()=>Promise<void>}){
  const [resultNote,setResultNote]=useState(''),[resultChanged,setResultChanged]=useState(false);
  const ref=useRef<HTMLDialogElement>(null),[note,setNote]=useState(recordNote(r)),[status,setStatus]=useState<OperationStatus>(classify(r).status),[appointment,setAppointment]=useState(appointmentNotes(r.overrides.appointment??r.appointment)),[start,setStart]=useState(appointmentTimes(r).start),[end,setEnd]=useState(appointmentTimes(r).end),[scheduleChanged,setScheduleChanged]=useState(false),[date,setDate]=useState(appointmentDate(r)),[steps,setSteps]=useState(r.overrides.steps||[false,false,false,false,false]),[assignee,setAssignee]=useState(r.overrides.assignee||''),[error,setError]=useState(''),[busy,setBusy]=useState(false);
  useEffect(()=>{ref.current?.showModal();},[]);

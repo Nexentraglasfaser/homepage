@@ -3,7 +3,7 @@ import {appointmentDate,recordNote,type OperationRecord} from './operations-mode
 import {appointmentTimeLabel,compareAppointments} from './operations-appointments';
 import {overviewStatus} from './operations-overview';
 export const berlinToday=()=>new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Berlin',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
-export function dayJobs(records:OperationRecord[],date:string,project:string){return records.filter(r=>appointmentDate(r)===date&&(!project||r.project===project)).sort(compareAppointments);}
+export function dayJobs(records:OperationRecord[],date:string,project:string){return records.filter(r=>!!date&&appointmentDate(r)===date&&(!project||r.project===project)).sort(compareAppointments);}
 export function StaffDay({records,open}:{records:OperationRecord[];open:(r:OperationRecord)=>void}){
  const [date,setDate]=useState(berlinToday),[project,setProject]=useState('');
  const jobs=dayJobs(records,date,project);

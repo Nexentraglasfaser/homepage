@@ -1,0 +1,51 @@
+import {InstallApp} from './InstallApp';
+import {useEffect,useRef,useState} from 'react';
+import {CalendarDays,Search,LogOut,RefreshCw,Network} from 'lucide-react';
+import {operationApi as api,operationsClient} from './operations-client';
+import {StaffDay} from './StaffDay';
+import {RecordDialog,type Me} from './OperationsApp';
+import {type OperationsData,type OperationRecord} from './operations-model';
+import {inOverview,overviewStatus} from './operations-overview';
+import {matchesOperationSearch} from './operations-search';
+import {canUseInstallerApp} from './installer-access';
+import './installer.css';
+export function InstallerApp(){
+ const [data,setData]=useState<OperationsData|null>(null),[me,setMe]=useState<Me|null>(null);
+ const [ready,setReady]=useState(false),[busy,setBusy]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState('');
+ const [email,setEmail]=useState(''),[password,setPassword]=useState(''),[tab,setTab]=useState<'day'|'search'>('day'),[query,setQuery]=useState('');
+ const [selected,setSelected]=useState<OperationRecord|null>(null);
+ const epoch=useRef(0),flight=useRef<Promise<void>|null>(null);
+ const clear=()=>{epoch.current++;setData(null);setMe(null);setSelected(null);setNotice('');};
+ const refresh=()=>{
+  if(flight.current)return flight.current;
+  const generation=epoch.current;
+  const task=(async()=>{try{
+   const c=await operationsClient();const session=(await c.auth.getSession()).data.session;
+   if(!session){if(generation===epoch.current){clear();setReady(true);}return;}
+   const identity:Me=await api('me');
+   if(generation!==epoch.current)return;
+   setMe(identity);
+   if(!canUseInstallerApp(identity.role)){setData(null);setSelected(null);return;}
+   const next=await api('operations/sync');
+   if(generation!==epoch.current)return;
+   if(!canUseInstallerApp(next.me.role)){setMe(next.me);setData(null);setSelected(null);return;}
+   setData(next.data);setMe(next.me);setError('');
+   setSelected(old=>old&&next.data.records.some((r:OperationRecord)=>r.id===old.id)?old:null);
+  }catch(e){if(generation===epoch.current){setData(null);setSelected(null);setError((e as Error).message);}}
+  finally{if(generation===epoch.current)setReady(true);}})().finally(()=>{flight.current=null;});
+  flight.current=task;return task;
+ };
+ useEffect(()=>{
+  let disposed=false;let unsubscribe:undefined|(()=>void);
+  void operationsClient().then(c=>{if(disposed)return;const sub=c.auth.onAuthStateChange(event=>{if(event==='SIGNED_OUT'){clear();setReady(true);}});unsubscribe=()=>sub.data.subscription.unsubscribe();}).catch(()=>{});
+  void refresh();
+  const check=()=>{if(document.visibilityState==='visible')void refresh();};
+  const timer=setInterval(check,15000);document.addEventListener('visibilitychange',check);window.addEventListener('online',check);
+  return()=>{disposed=true;clearInterval(timer);unsubscribe?.();document.removeEventListener('visibilitychange',check);window.removeEventListener('online',check);};
+ },[]);
+ const logout=async()=>{clear();setPassword('');setEmail('');await (await operationsClient()).auth.signOut({scope:'local'});};
+ const login=async()=>{setBusy(true);setError('');try{const {error}=await (await operationsClient()).auth.signInWithPassword({email:email.trim(),password});if(error)throw Error('Anmeldung fehlgeschlagen. Bitte E-Mail und Passwort prüfen.');setPassword('');await refresh();}catch(e){setError((e as Error).message);}finally{setBusy(false);}};
+ if(!data)return <main className="installer-login"><Network size={40}/><h1>FiberOffice <span>Connect</span></h1><p>Deine Einsätze. Alles dabei.</p><InstallApp/>{error&&<p role="alert" className="error">{error}</p>}{!ready?<p>Verbindung wird geprüft …</p>:me&&!canUseInstallerApp(me.role)?<><p>Diese App ist für Monteure. Bitte lass dir von der Administration die Rolle „Mitarbeiter – Monteur“ und die passenden Listen freigeben.</p><button onClick={()=>void logout()}>Abmelden</button></>:<form onSubmit={e=>{e.preventDefault();void login();}}><label>E-Mail<input required type="email" autoComplete="username" value={email} onChange={e=>setEmail(e.target.value)}/></label><label>Passwort<input required type="password" autoComplete="current-password" value={password} onChange={e=>setPassword(e.target.value)}/></label><button className="primary" disabled={busy}>{busy?'Anmeldung läuft …':'Anmelden'}</button><small>Nur mit einem von Nexentra angelegten Konto. Keine Selbstregistrierung. Passwort vergessen? Bitte die Administration kontaktieren.</small></form>}{ready&&error&&<button onClick={()=>void refresh()}>Verbindung erneut prüfen</button>}<small>Zum Abrufen und Speichern ist Internet erforderlich.</small></main>;
+ const records=data.records.filter(inOverview),results=records.filter(r=>matchesOperationSearch(r,query));
+ return <div className="ops-shell installer-shell"><header className="installer-header"><div><strong>FiberOffice Connect</strong><small>{me?.role==='admin'?'Administration · Monteuransicht':'Monteur · Nexentra'}</small></div><button aria-label="Abmelden" onClick={()=>void logout()}><LogOut size={20}/></button></header><main className="installer-main"><InstallApp/><div className="installer-title"><h1>{tab==='day'?'Deine Einsätze':'Adressen suchen'}</h1><button aria-label="Aktualisieren" onClick={()=>void refresh()}><RefreshCw size={20}/></button></div><p className="installer-hint">{me?.canEditStatus?'Arbeitsschritte und Dokumentation freigegeben':'Leserechte · Statusänderungen nicht freigegeben'}</p>{notice&&<p role="status" className="success">{notice}</p>}{tab==='day'?<StaffDay records={records} open={setSelected}/>:<><label className="installer-search"><Search size={20}/><input type="search" aria-label="Adresse, Name oder ID suchen" placeholder="Adresse, Name, ID …" value={query} onChange={e=>setQuery(e.target.value)}/></label><p>{results.length} Adressen in deinen freigegebenen Listen</p>{results.slice(0,100).map(r=><button className="installer-address" key={r.id} onClick={()=>setSelected(r)}><strong>{r.street} {r.number}</strong><span>{r.project} · {r.customer||'Kontakt offen'}</span><small>{overviewStatus(r)}</small></button>)}{results.length>100&&<p>Bitte die Suche eingrenzen, um weitere Adressen zu finden.</p>}</>}</main><nav className="installer-nav" aria-label="Monteur-Navigation"><button aria-current={tab==='day'?'page':undefined} onClick={()=>setTab('day')}><CalendarDays/>Termine</button><button aria-current={tab==='search'?'page':undefined} onClick={()=>setTab('search')}><Search/>Adressen</button></nav>{selected&&me&&<RecordDialog record={selected} data={data} me={me} close={()=>setSelected(null)} saved={async()=>{await refresh();setSelected(null);setNotice('Gespeichert. Der neue Stand ist im Portal verfügbar.');}}/>}</div>;
+}

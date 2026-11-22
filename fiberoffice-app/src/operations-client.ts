@@ -8,7 +8,7 @@ export const isLocal=()=>new URLSearchParams(location.search).get('workspace')==
 export async function operationsClient(){
  if(client)return client;
  const r=await fetch(import.meta.env.VITE_STATIC_HOST==='true'?import.meta.env.BASE_URL+'config.json':'/api/config');const cfg=await r.json();if(!cfg.supabaseUrl||!cfg.supabaseKey)throw Error('Die Supabase-Verbindung wird noch eingerichtet. Kundendaten sind bis dahin nicht online verfügbar.');
- client=createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true,storageKey:'fiber-operations-auth'}});client.auth.onAuthStateChange(event=>{if(event==='SIGNED_OUT'||event==='SIGNED_IN'||event==='USER_UPDATED')snapshotSync.clear();});return client;
+ client=createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true,storageKey:import.meta.env.VITE_INSTALLER_APP==='true'?'fiber-installer-auth':'fiber-operations-auth'}});client.auth.onAuthStateChange(event=>{if(event==='SIGNED_OUT'||event==='SIGNED_IN'||event==='USER_UPDATED')snapshotSync.clear();});return client;
 }
 async function all(c:SupabaseClient,table:string){const list:Record<string,any>[]=[];for(let offset=0;;offset+=500){const q=await c.from(table).select('*').order(table==='ops_sources'?'tenant_id':table==='ops_members'?'user_id':'id').range(offset,offset+499);if(q.error)throw q.error;list.push(...q.data);if(q.data.length<500)return list;}}
 export async function operationApi(path:string,options?:RequestInit):Promise<any>{
