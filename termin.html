@@ -334,9 +334,9 @@
     // Freigabe 22.11.2026: Recklinghausen vom 24. bis 27. November.
     // Unverbindliche Anfragen; konkrete Zeiten und Zugang werden anschließend bestätigt.
     const recklinghausenDates = {
-      '2026-11-24': ['Vormittags', 'Mittags', 'Nachmittags'],
-      '2026-11-25': ['Vormittags', 'Mittags', 'Nachmittags'],
-      '2026-11-26': ['Vormittags', 'Mittags', 'Nachmittags'],
+      '2026-11-24': ['Vormittags', 'Nachmittags'],
+      '2026-11-25': ['Vormittags', 'Nachmittags'],
+      '2026-11-26': ['Vormittags', 'Nachmittags'],
       '2026-11-27': ['Vormittags', 'Mittags', 'Nachmittags']
     };
     const appointmentAvailability = {
@@ -354,6 +354,9 @@
       Mittags: 'Früher Nachmittag (13–14 Uhr)',
       Nachmittags: 'Nachmittags (14–18 Uhr)'
     };
+
+    const labelForWindow = (window, date) => window === 'Vormittags' && date === '2026-11-24'
+      ? 'Vormittags (09:30–12:30 Uhr)' : windowLabels[window];
 
     const normalizeCity = (city) => city
       .trim()
@@ -383,6 +386,11 @@
       const windows = availableWindows(desiredDate.value);
       windowInputs.forEach((input) => {
         input.disabled = !windows.includes(input.value);
+        input.closest('.time-option').hidden = Boolean(desiredDate.value) && input.disabled;
+        if (input.value === 'Vormittags') {
+          document.querySelector('label[for="vormittags"] small').textContent =
+            desiredDate.value === '2026-11-24' ? '09:30–12:30 Uhr' : '07:30–12:30 Uhr';
+        }
         if (input.disabled) input.checked = false;
       });
       submitButton.disabled = windows.length === 0;
@@ -396,7 +404,7 @@
       const previousWindow = alternativeWindow.value;
       alternativeWindow.replaceChildren(new Option('Bitte auswählen', ''));
       alternativeWindows.forEach((window) => {
-        alternativeWindow.add(new Option(windowLabels[window], windowLabels[window]));
+        alternativeWindow.add(new Option(labelForWindow(window, alternativeDate.value), labelForWindow(window, alternativeDate.value)));
       });
       if (alternativeWindows.length) alternativeWindow.add(new Option('Flexibel', 'Flexibel'));
       alternativeWindow.disabled = alternativeWindows.length === 0;
@@ -444,7 +452,7 @@
       const alternativeWindows = availableWindows(alternativeDate.value);
       const validAlternative = alternativeDate.value
         ? alternativeWindows.length > 0 && (!alternativeWindow.value || alternativeWindow.value === 'Flexibel'
-          || alternativeWindows.some((window) => windowLabels[window] === alternativeWindow.value))
+          || alternativeWindows.some((window) => labelForWindow(window, alternativeDate.value) === alternativeWindow.value))
         : !alternativeWindow.value;
 
       if (!validDesiredWindow || !validAlternative) {
@@ -464,7 +472,7 @@
         `Kunden-/CS-ID: ${value('#csid')}`,
         '',
         `Wunschtag: ${desiredDate.value ? formatDate(desiredDate.value) : '–'}`,
-        `Bevorzugter Zeitraum: ${windowLabels[selectedWindow] || selectedWindow}`,
+        `Bevorzugter Zeitraum: ${labelForWindow(selectedWindow, desiredDate.value) || selectedWindow}`,
         `Alternativer Tag: ${alternativeDate.value ? formatDate(alternativeDate.value) : '–'}`,
         `Alternativer Zeitraum: ${value('#alternativzeitraum')}`,
         '',
