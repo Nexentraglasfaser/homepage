@@ -92,3 +92,27 @@ it('password reset atomically invalidates sessions, audits without secrets and k
  await expect(db.query('update auth.users set encrypted_password=$1,raw_app_meta_data=$2 where id=$3',['bad',JSON.stringify({fiber_password_reset:{actor:id(2),requestId:'reset-2'}}),id(60)])).rejects.toThrow('Nur die Administration');
  expect((await db.query('select encrypted_password from auth.users where id=$1',[id(60)])).rows[0]).toEqual({encrypted_password:'hash-only'});
 });
+it('staff access is list-scoped with distinct scheduling and construction permissions',async()=>{
+ await db.exec(readFileSync(new URL('../supabase/migrations/202611220001_employee_roles.sql',import.meta.url),'utf8'));
+ for(const [n,role] of [[90,'planner'],[91,'installer']] as const){
+ await db.query('insert into auth.users(id,email,email_confirmed_at,raw_app_meta_data) values($1,$2,now(),$3)',[id(n),role+'@test.invalid',JSON.stringify({fiber_provision:{actor:id(1),role,projects:[id(30)],canEditStatus:true}})]);
+ expect((await as(n,'select name from public.ops_projects')).rows).toEqual([{name:'Duraku'}]);
+ expect((await as(n,'select * from public.ops_records')).rows.length).toBeGreaterThan(1);
+ await expect(create(n,'Forbidden '+role,95+n)).rejects.toThrow();
+ await expect(as(n,'select public.ops_set_user_role($1,$2)',['gu@test.invalid','installer'])).rejects.toThrow();
+ const hidden=(await as(1,"select id,version from public.ops_records where project='Recklinghausen-Süd'")).rows[0];
+ await expect(as(n,'select public.ops_update($1,$2,$3)',[hidden.id,hidden.version,JSON.stringify({note:'Forbidden'})])).rejects.toThrow();
+ }
+ const planner=(await as(90,'select public.ops_me() as me')).rows[0].me;expect(planner.canEdit).toBe(true);expect(planner.canEditStatus).toBe(false);
+ const r=(await as(90,'select id,version from public.ops_records order by id')).rows[0];
+ await as(90,'select public.ops_update($1,$2,$3)',[r.id,r.version,JSON.stringify({date:'2026-11-24',appointment:'Geplanter Termin: 2026-11-24 | 09:30 Uhr',note:'Kunde bestätigt'})]);
+ for(const patch of [{status:'Fertiggestellt',note:'Nicht erlaubt'},{assignee:'nu@test.invalid'}])await expect(as(90,'select public.ops_update($1,$2,$3)',[r.id,r.version+1,JSON.stringify(patch)])).rejects.toThrow('Feld');
+ await expect(as(91,'select public.ops_update($1,$2,$3)',[r.id,r.version+1,JSON.stringify({date:'2026-11-25'})])).rejects.toThrow('Feld');
+ await as(91,'select public.ops_update($1,$2,$3)',[r.id,r.version+1,JSON.stringify({status:'Fertiggestellt',note:'Montage dokumentiert'})]);
+ await as(90,'select public.ops_update($1,$2,$3)',[r.id,r.version+2,JSON.stringify({date:'',appointment:'',note:'Termin aufgehoben'})]);
+ expect((await as(90,'select payload from public.ops_records where id=$1',[r.id])).rows[0].payload.overrides.status).toBe('Fertiggestellt');
+ await as(1,'select public.ops_set_user_role($1,$2)',['installer@test.invalid','planner']);
+ expect((await as(91,'select public.ops_me() as me')).rows[0].me.canEditStatus).toBe(false);
+ await grant('planner@test.invalid',[]);expect((await as(90,'select * from public.ops_records')).rows).toHaveLength(0);
+ await as(1,'select public.ops_set_user_disabled($1,true)',['installer@test.invalid']);await expect(as(91,'select public.ops_me()')).rejects.toThrow();
+});

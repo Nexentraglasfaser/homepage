@@ -34,6 +34,7 @@ export async function operationApi(path:string,options?:RequestInit){
  if(path==='projects/create')return rpc('ops_create_project',{p_id:input.id,p_name:input.name,p_city:input.city,p_client:input.client,p_code:input.code,p_note:input.note});
  if(path==='addresses/import')return rpc('ops_import_addresses',{p_project:input.projectId,p_request:input.requestId,p_rows:input.rows,p_file:input.file,p_sheet:input.sheet});
  if(path==='project-permissions')return rpc('ops_project_permissions',{p_email:input.email,p_projects:input.projectIds});
+ if(path==='users/role')return rpc('ops_set_user_role',{p_email:input.email,p_role:input.role});
  if(path==='permissions')return rpc('ops_permissions',{p_email:input.email,p_allowed:input.canEditStatus});
  if(path==='update')return rpc('ops_update',{p_id:input.id,p_version:input.version,p_patch:input.patch});
  if(path==='operations'){
