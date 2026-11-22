@@ -116,3 +116,16 @@ it('staff access is list-scoped with distinct scheduling and construction permis
  await grant('planner@test.invalid',[]);expect((await as(90,'select * from public.ops_records')).rows).toHaveLength(0);
  await as(1,'select public.ops_set_user_disabled($1,true)',['installer@test.invalid']);await expect(as(91,'select public.ops_me()')).rejects.toThrow();
 });
+it('small sync fingerprints follow RLS, updates and revoked membership',async()=>{
+ await db.exec(readFileSync(new URL('../supabase/migrations/202611220002_efficient_sync.sql',import.meta.url),'utf8'));
+ await grant('planner@test.invalid',[id(30)]);
+ const stamp=async(n:number)=>(await as(n,'select public.ops_sync_state() as s')).rows[0].s;
+ const before=await stamp(90);expect(before.token).toHaveLength(32);expect(before.me.role).toBe('planner');
+ expect((await stamp(90)).token).toBe(before.token);
+ await db.exec("update public.ops_records set payload=payload||'{\"note\":\"hidden change\"}' where project='Recklinghausen-Süd'");
+ expect((await stamp(90)).token).toBe(before.token);
+ await db.exec("update public.ops_records set payload=payload||'{\"note\":\"visible change\"}' where project='Duraku'");
+ expect((await stamp(90)).token).not.toBe(before.token);
+ const next=await stamp(90);await grant('planner@test.invalid',[]);expect((await stamp(90)).token).not.toBe(next.token);
+ await as(1,'select public.ops_set_user_disabled($1,true)',['planner@test.invalid']);await expect(stamp(90)).rejects.toThrow('Zugang gesperrt');
+});

@@ -1,3 +1,5 @@
+import {createSnapshotSync} from './operations-sync';
+const snapshotSync=createSnapshotSync<any,any>();
 import {createClient,type SupabaseClient} from '@supabase/supabase-js';
 import {inspectProjectFile} from './project-files';
 import {validateFileContent} from './domain';
@@ -6,13 +8,15 @@ export const isLocal=()=>new URLSearchParams(location.search).get('workspace')==
 export async function operationsClient(){
  if(client)return client;
  const r=await fetch(import.meta.env.VITE_STATIC_HOST==='true'?import.meta.env.BASE_URL+'config.json':'/api/config');const cfg=await r.json();if(!cfg.supabaseUrl||!cfg.supabaseKey)throw Error('Die Supabase-Verbindung wird noch eingerichtet. Kundendaten sind bis dahin nicht online verfügbar.');
- client=createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true,storageKey:'fiber-operations-auth'}});return client;
+ client=createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true,storageKey:'fiber-operations-auth'}});client.auth.onAuthStateChange(event=>{if(event==='SIGNED_OUT'||event==='SIGNED_IN'||event==='USER_UPDATED')snapshotSync.clear();});return client;
 }
 async function all(c:SupabaseClient,table:string){const list:Record<string,any>[]=[];for(let offset=0;;offset+=500){const q=await c.from(table).select('*').order(table==='ops_sources'?'tenant_id':table==='ops_members'?'user_id':'id').range(offset,offset+499);if(q.error)throw q.error;list.push(...q.data);if(q.data.length<500)return list;}}
-export async function operationApi(path:string,options?:RequestInit){
+export async function operationApi(path:string,options?:RequestInit):Promise<any>{
+ if(isLocal()&&path==='operations/sync')return {data:await operationApi('operations'),me:await operationApi('me')};
  if(isLocal()){const r=await fetch('/api/'+path,options),d=await r.json();if(!r.ok)throw Error(d.error||'Anfrage fehlgeschlagen');return d;}
  const c=await operationsClient();const rpc=async(name:string,args:Record<string,unknown>={})=>{const {data,error}=await c.rpc(name,args);if(error)throw Error(error.message);return data;};
  const input=typeof options?.body==='string'?JSON.parse(options.body):{};
+ if(path==='operations/sync')return snapshotSync.read(()=>rpc('ops_sync_state'),()=>operationApi('operations'));
  if(path==='project-files')return all(c,'ops_project_files');
  if(path.startsWith('project-upload?')){
   const params=new URLSearchParams(path.split('?')[1]),projectId=params.get('project')!,category=params.get('category')!;
