@@ -1,3 +1,4 @@
+import {workResultNote} from '../src/operations-workflow';
 import {PGlite} from '@electric-sql/pglite';
 import {beforeAll,afterAll,it,expect} from 'vitest';
 import {readFileSync} from 'node:fs';
@@ -142,4 +143,15 @@ it('provisions when Auth saves protected metadata after INSERT, without overwrit
  await db.query('update auth.users set raw_app_meta_data=$1 where id=$2',[JSON.stringify(meta),id(92)]);
  expect((await as(92,'select * from public.ops_projects')).rows).toHaveLength(0);
  expect((await as(1,"select * from public.ops_audits where after_data->>'email'='delayed@test.invalid' and after_data->>'action'='Benutzer angelegt'")).rows).toHaveLength(1);
+});
+it('installer can save a fault without an extra remark, preserving appointment and audit',async()=>{
+ await db.query('insert into auth.users(id,email,email_confirmed_at,raw_app_meta_data) values($1,$2,now(),$3)',[id(992),'fault-installer@test.invalid',JSON.stringify({fiber_provision:{actor:id(1),role:'installer',projects:[id(30)],canEditStatus:true}})]);
+ const before=(await as(992,'select id,version,payload from public.ops_records order by id')).rows[0];
+ const patch={status:'Fehlerstelle',steps:[false,false,false,false,false],note:workResultNote('Fehlerstelle',[false,false,false,false,false],'','Termin bestätigt.')};
+ await as(992,'select public.ops_update($1,$2,$3)',[before.id,before.version,JSON.stringify(patch)]);
+ const after=(await as(992,'select version,payload from public.ops_records where id=$1',[before.id])).rows[0];
+ expect(after.version).toBe(before.version+1);expect(after.payload.overrides).toMatchObject(patch);
+ expect(after.payload.overrides.date).toBe(before.payload.overrides.date);expect(after.payload.overrides.appointment).toBe(before.payload.overrides.appointment);
+ const audit=(await as(1,'select actor,after_data from public.ops_audits where record_id=$1 order by at desc limit 1',[before.id])).rows[0];
+ expect(audit.actor).toBe('fault-installer@test.invalid');expect(audit.after_data.status).toBe('Fehlerstelle');
 });
