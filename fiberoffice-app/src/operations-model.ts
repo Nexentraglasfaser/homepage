@@ -59,7 +59,7 @@ export function isScheduled(r:OperationRecord) {
  if(/^Geplanter Termin: \d{4}-\d{2}-\d{2} \|/.test(text))return true;
  if(/abgesagt|storno|aufgehoben|nicht terminiert|noch zu terminieren|neu terminieren/i.test(text))return false;
  return appointmentStatus(text)==='Terminiert' || isScheduledGBox(r)
-  || (r.overrides.appointment===undefined && status==='Terminiert');
+  || status==='Terminiert';
 }
 export function matchesStatusFilter(r:OperationRecord,status:string) {
  return !status || classify(r).status===(status==='Intern geplant'?'Terminiert':status);

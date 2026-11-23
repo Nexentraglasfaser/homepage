@@ -1,3 +1,4 @@
+import {singleFlightFactory,authIdentityChanged} from './session-recovery';
 import {createSnapshotSync} from './operations-sync';
 const snapshotSync=createSnapshotSync<any,any>();
 import {createClient,type SupabaseClient} from '@supabase/supabase-js';
@@ -5,11 +6,11 @@ import {inspectProjectFile} from './project-files';
 import {validateFileContent} from './domain';
 let client:SupabaseClient|null=null;
 export const isLocal=()=>new URLSearchParams(location.search).get('workspace')==='local';
-export async function operationsClient(){
+export const operationsClient=singleFlightFactory(async()=>{
  if(client)return client;
  const r=await fetch(import.meta.env.VITE_STATIC_HOST==='true'?import.meta.env.BASE_URL+'config.json':'/api/config');const cfg=await r.json();if(!cfg.supabaseUrl||!cfg.supabaseKey)throw Error('Die Supabase-Verbindung wird noch eingerichtet. Kundendaten sind bis dahin nicht online verfügbar.');
- client=createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true,storageKey:import.meta.env.VITE_INSTALLER_APP==='true'?'fiber-installer-auth':'fiber-operations-auth'}});client.auth.onAuthStateChange(event=>{if(event==='SIGNED_OUT'||event==='SIGNED_IN'||event==='USER_UPDATED')snapshotSync.clear();});return client;
-}
+ client=createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true,storageKey:import.meta.env.VITE_INSTALLER_APP==='true'?'fiber-installer-auth':'fiber-operations-auth'}});let identity:string|undefined;client.auth.onAuthStateChange((event,session)=>{const next=session?.user.id;if(authIdentityChanged(event,next,identity))snapshotSync.clear();identity=next;});return client;
+});
 async function all(c:SupabaseClient,table:string){const list:Record<string,any>[]=[];for(let offset=0;;offset+=500){const q=await c.from(table).select('*').order(table==='ops_sources'?'tenant_id':table==='ops_members'?'user_id':'id').range(offset,offset+499);if(q.error)throw q.error;list.push(...q.data);if(q.data.length<500)return list;}}
 export async function operationApi(path:string,options?:RequestInit):Promise<any>{
  if(isLocal()&&path==='operations/sync')return {data:await operationApi('operations'),me:await operationApi('me')};
