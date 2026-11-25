@@ -71,14 +71,18 @@ export function OperationsApp(){
  {selected&&<RecordDialog record={selected} data={data} me={me} close={()=>setSelected(null)} saved={async()=>{await refresh();setSelected(null);setToast('Änderung gespeichert. Alle berechtigten Zugänge sehen den neuen Stand.');}}/>}</div>;
 }
 function StatusBadge({status}:{status:string}){return <span className={'ops-status '+(status==='Fertiggestellt'?'done':status==='Fehlerstelle'?'fault':status==='Terminiert'?'scheduled':'')}>{status}</span>;}
-export function RecordDialog({record:r,data,me,close,saved}:{record:OperationRecord;data:OperationsData;me:Me;close:()=>void;saved:()=>Promise<void>}){
+export function RecordDialog({record:r,data,me,close,saved,installerView=false}:{installerView?:boolean;record:OperationRecord;data:OperationsData;me:Me;close:()=>void;saved:()=>Promise<void>}){
  const [resultNote,setResultNote]=useState(''),[resultChanged,setResultChanged]=useState(false);
  const resultInput=useRef<HTMLInputElement>(null),saveError=useRef<HTMLDivElement>(null);
  const ref=useRef<HTMLDialogElement>(null),[note,setNote]=useState(recordNote(r)),[status,setStatus]=useState<OperationStatus>(classify(r).status),[appointment,setAppointment]=useState(appointmentNotes(r.overrides.appointment??r.appointment)),[start,setStart]=useState(appointmentTimes(r).start),[end,setEnd]=useState(appointmentTimes(r).end),[scheduleChanged,setScheduleChanged]=useState(false),[date,setDate]=useState(appointmentDate(r)),[steps,setSteps]=useState(r.overrides.steps||[false,false,false,false,false]),[assignee,setAssignee]=useState(r.overrides.assignee||''),[error,setError]=useState(''),[busy,setBusy]=useState(false);
  const reasonRequired=['Klärung','Storniert'].includes(status);
  useEffect(()=>{ref.current?.showModal();},[]);
  useEffect(()=>{if(error)saveError.current?.scrollIntoView({block:'nearest'});},[error]);
- const chooseResult=(next:OperationStatus)=>{setStatus(next);setResultChanged(true);setError('');if(['Klärung','Storniert'].includes(next))resultInput.current?.focus();};
+ const chooseResult=(next:OperationStatus)=>{
+  if(installerView && next==='Fertiggestellt'){
+   setSteps(current=>[!!current[0],!!current[1],true,true,true]);
+  }
+  setStatus(next);setResultChanged(true);setError('');if(['Klärung','Storniert'].includes(next))resultInput.current?.focus();};
  const changeStep=(i:number,checked:boolean)=>{const next=steps.map((v,j)=>i===j?checked:v);setSteps(next);setStatus(statusAfterSteps(status,next));setResultChanged(true);};
  const clearAppointment=()=>{const cleared=removeAppointment(status,date,appointment,note);setDate(cleared.date);setStart('');setEnd('');setScheduleChanged(true);setAppointment(cleared.appointment);setNote(cleared.note);setStatus(cleared.status);};
  const save=async()=>{setBusy(true);setError('');try{if(resultChanged&&reasonRequired&&!resultNote.trim()){resultInput.current?.focus();throw Error('Bitte unter „Neue Bemerkung“ den Grund eintragen, zum Beispiel „keine Luft“. Es wurde noch nichts gespeichert.');}const patch:Record<string,unknown>={};if(me.canEdit){patch.note=note;patch.appointment=scheduleChanged?plannedAppointment(date,start,end,appointment && !/^Geplanter Termin:/.test(r.overrides.appointment??r.appointment) && (date!==appointmentDate(r)||start!==appointmentTimes(r).start||end!==appointmentTimes(r).end)?'Bisheriger Termin-/Zugangshinweis (aktuelle Planung siehe oben): '+appointment:appointment):(r.overrides.appointment??r.appointment);patch.date=date;if(me.role==='admin')patch.assignee=assignee;}if(me.canEditStatus){patch.status=status;patch.steps=steps;patch.note=resultChanged?workResultNote(status,steps,resultNote,note):note;}await post('update',{id:r.id,version:r.version,patch});await saved();}catch(e){setError((e as Error).message);}finally{setBusy(false);}};
