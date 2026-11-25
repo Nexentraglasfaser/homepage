@@ -189,3 +189,20 @@ it('speichert Kabeldaten am Einsatz mit Planwerten, Versionsprüfung und Änderu
  const entry=(await as(1,'select after_data from public.ops_audits where record_id=$1 order by at desc limit 1',[r.id])).rows[0];
  expect(entry.after_data).toMatchObject(cable);
 });
+
+it('verwaltet persönliche Monteure nur als zuständiger Admin und behält den Verlauf',async()=>{
+ await db.exec('alter table auth.users add column banned_until timestamptz,add column deleted_at timestamptz;create table auth.identities(user_id uuid);');
+ await db.exec(readFileSync(new URL('../supabase/migrations/202611250003_installer_management.sql',import.meta.url),'utf8'));
+ const sql='select public.ops_manage_installer($1,$2,$3)';
+ const target='fault-installer@test.invalid';
+ await expect(as(992,sql,[target,'delete',null])).rejects.toThrow();
+ await expect(as(1,sql,['admin@test.invalid','delete',null])).rejects.toThrow();
+ await as(1,sql,[target,'name','Monteur Eins']);
+ const me=(await as(1,'select public.ops_me() as me')).rows[0].me;
+ expect(me.members.find((x:any)=>x.email===target).displayName).toBe('Monteur Eins');
+ await as(1,sql,[target,'delete',null]);
+ await expect(as(992,'select public.ops_me()')).rejects.toThrow();
+ expect((await db.query('select * from public.ops_project_members where user_id=$1',[id(992)])).rows).toHaveLength(0);
+ expect((await db.query('select * from public.ops_audits where actor=$1',[target])).rows.length).toBeGreaterThan(0);
+ expect((await db.query('select email from auth.users where id=$1',[id(992)])).rows[0]).toEqual({email:null});
+});
