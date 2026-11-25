@@ -31,9 +31,9 @@ export function createStatusReport(rows:OperationRecord[],date:string){
   const state=reportState(r),c=cableValues(r.overrides),length=blownLength(c.meterStart,c.meterEnd);
   const steps=['Hausbegehung','Hauseinführung','Eingeblasen','Gespleißt','Dokumentiert'].filter((_,i)=>r.overrides.steps?.[i]);
   const details=[r.customer,r.phone,r.reference&&'ID '+r.reference,r.nvt&&'NVT / GVS: '+r.nvt,(c.actualPipe||r.pipe)&&'Rohr: '+(c.actualPipe||r.pipe),we(r)&&we(r)+' WE',c.actualUnits&&r.units&&'Plan: '+r.units+' WE',c.fiberCount&&c.fiberCount+' Fasern'].filter(Boolean).join(' | ');
-  const meters=[c.meterStart&&'Start '+c.meterStart+' m',c.meterEnd&&'Ende '+c.meterEnd+' m',length!==null?'eingeblasene Strecke '+length.toLocaleString('de-DE')+' m':''].filter(Boolean).join(' / ');
+  const meters=length===null?'':'Eingeblasene Strecke: '+length.toLocaleString('de-DE')+' m';
   const remark=(recordNote(r)||'').split(/Bisheriger Verlauf:/i)[0].trim();
-  const sections=[[r.street+' '+r.number+' // '+state.label,true],[details,false],[meters&&'Kabelzähler: '+meters,false],[steps.length?'Bestätigte Schritte: '+steps.join(', '):'',false],[remark,false]] as const;
+  const sections=[[r.street+' '+r.number+' // '+state.label,true],[details,false],[meters,false],[steps.length?'Bestätigte Schritte: '+steps.join(', '):'',false],[remark,false]] as const;
   const lines=sections.flatMap(([value,bold])=>{font(bold?9:8,bold);return value?(pdf.splitTextToSize(value.replaceAll('→',' > '),146) as string[]).map(text=>({text,bold})):[];});
   if(y+Math.min(lines.length,6)*4+6>278)nextPage();
   for(let i=0;i<lines.length;){

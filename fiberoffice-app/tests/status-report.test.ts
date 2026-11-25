@@ -13,3 +13,10 @@ it('erstellt einen projektbezogenen Tagesbericht mit Folgeseiten bei langen Beme
  expect(pdf.getNumberOfPages()).toBeGreaterThan(1);expect(name).toBe('Statusmeldung_Musterstadt_25.11.2026.pdf');
  expect(()=>createStatusReport([r,{...r,project:'Anderes Projekt'}],'2026-11-25')).toThrow();
 });
+
+it('gibt nur die berechnete Strecke in der fertigen PDF aus',()=>{
+ const {pdf}=createStatusReport([row('Fertiggestellt')],'2026-11-25');
+ const page=(pdf.internal as typeof pdf.internal & {pages:string[][]}).pages[1].join('\n');
+ expect(page).toContain('Eingeblasene Strecke: 200 m');
+ expect(page).not.toMatch(/6000 m|5800 m|Kabelzähler/);
+});
