@@ -15,3 +15,11 @@ it('exports only selected-day jobs and keeps site directions and technical notes
  const pdf=await makeAppointmentPdf(dayJobs(rows,'2026-11-24','Dortmund'));
  const body=pdf.output();expect(body).toContain('Testkontakt');expect(body).toContain('NVT-STANDORT: Am Suedpark 39');expect(body).toContain('Kassette A1');expect(body).not.toContain('Testweg 12');expect(body).not.toContain('Testweg 13');
 });
+
+it('shows the NVT address from the previous history without exposing further notes',async()=>{
+ const {distributorLocation}=await import('../src/StaffDay');
+ const r=job('2','2026-11-25','09:00',{overrides:{note:'25.11.2026: erledigt.\nBisheriger Verlauf:\nNVT-STANDORT: NVT 005 (Los 1) – Am Südpark 39, Recklinghausen. Quelle: Adressliste\nPrivater Vermerk'}});
+ expect(distributorLocation(r)).toBe('NVT 005 (Los 1) – Am Südpark 39, Recklinghausen');
+ expect(distributorLocation({...r,overrides:{},nvt:'GVS 8175 - Parkallee 6'})).toBe('Parkallee 6');
+ expect(distributorLocation({...r,overrides:{},nvt:'NVT 005'})).toBe('Adresse nicht hinterlegt');
+});
