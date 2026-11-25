@@ -21,6 +21,6 @@ export function StatusReportButton({records,date,disabled=false}:{records:()=>Op
  {preview==='large'&&<dialog ref={largeDialog} aria-label="Große PDF-Vorschau" style={{width:'96vw',maxWidth:'none',padding:8}} onCancel={e=>{e.stopPropagation();setPreview('closed');}}>
  <button type="button" onClick={()=>setPreview('closed')}>Vorschau schließen</button>
  <iframe title="Große Vorschau der Statusmeldung" src={url} style={{width:'100%',height:'78dvh',border:0}}/></dialog>}
- <p><button type="button" onClick={()=>setPreview('large')}>Vorschau öffnen</button> {preview==='inline'&&<button type="button" onClick={()=>setPreview('closed')}>Vorschau schließen</button>}</p><p><a href={url} download={file.name}>PDF speichern</a> {navigator.canShare?.({files:[file]})&&<button type="button" onClick={()=>void share()}>PDF teilen / senden</button>}</p></div>}
+ <p><button type="button" onClick={()=>setPreview('large')}>Vorschau öffnen</button> {preview==='inline'&&<button type="button" onClick={()=>setPreview('closed')}>Vorschau schließen</button>}</p><p><button type="button" className="installer-pdf-save" onClick={()=>{const download=document.createElement('a');download.href=url;download.download=file.name;document.body.appendChild(download);download.click();download.remove();}}>PDF speichern</button> {navigator.canShare?.({files:[file]})&&<button type="button" onClick={()=>void share()}>PDF teilen / senden</button>}</p></div>}
  {error&&<p role="alert">{error}</p>}</section>;
 }

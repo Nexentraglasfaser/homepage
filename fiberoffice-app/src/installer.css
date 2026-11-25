@@ -4,3 +4,6 @@
 .installer-filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,145px),1fr));gap:10px;margin-top:12px}
 .installer-filters label{display:grid;gap:4px;min-width:0;color:#385674;font-size:14px}
 .installer-filters select{width:100%;min-height:44px;background:white}
+
+.installer-shell button.installer-pdf-save{background:#155fc0;border-color:#155fc0;color:white}
+.installer-shell button.installer-pdf-save:hover{background:#104c9a;border-color:#104c9a}
