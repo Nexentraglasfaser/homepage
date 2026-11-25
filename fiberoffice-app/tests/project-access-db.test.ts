@@ -171,3 +171,21 @@ it('admin edits contact details with version check and audit, installer cannot',
  expect(audit.before_data.phone??null).toBe(r.payload.phone??null);
  expect(audit.after_data.phone).toBe('0123 45');
 });
+
+it('speichert Kabeldaten am Einsatz mit Planwerten, Versionsprüfung und Änderungsprotokoll',async()=>{
+ await db.exec(readFileSync(new URL('../supabase/migrations/202611250002_cable_measurements.sql',import.meta.url),'utf8'));
+ const r=(await as(992,'select id,version,payload from public.ops_records order by id')).rows[0];
+ const sql='select public.ops_update($1,$2,$3)';
+ const cable={meterStart:'6000',meterEnd:'5800',fiberCount:'12',actualPipe:'Rot -',actualUnits:'2'};
+ const args=[r.id,r.version,JSON.stringify(cable)];
+ await expect(as(90,sql,args)).rejects.toThrow();
+ await expect(as(992,sql,[r.id,r.version,JSON.stringify({fiberCount:'-2'})])).rejects.toThrow();
+ await as(992,sql,args);
+ await expect(as(992,sql,args)).rejects.toThrow('Zwischenzeitlich');
+ const after=(await as(1,'select payload from public.ops_records where id=$1',[r.id])).rows[0].payload;
+ expect(after.overrides).toMatchObject(cable);
+ expect(after.units).toBe(r.payload.units);
+ expect(after.pipe).toBe(r.payload.pipe);
+ const entry=(await as(1,'select after_data from public.ops_audits where record_id=$1 order by at desc limit 1',[r.id])).rows[0];
+ expect(entry.after_data).toMatchObject(cable);
+});
