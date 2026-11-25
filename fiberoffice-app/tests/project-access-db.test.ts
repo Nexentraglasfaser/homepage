@@ -155,3 +155,19 @@ it('installer can save a fault without an extra remark, preserving appointment a
  const audit=(await as(1,'select actor,after_data from public.ops_audits where record_id=$1 order by at desc limit 1',[before.id])).rows[0];
  expect(audit.actor).toBe('fault-installer@test.invalid');expect(audit.after_data.status).toBe('Fehlerstelle');
 });
+
+it('admin edits contact details with version check and audit, installer cannot',async()=>{
+ await db.exec(readFileSync(new URL('../supabase/migrations/202611250001_admin_contacts.sql',import.meta.url),'utf8'));
+ const r=(await as(992,'select id,version,payload from public.ops_records order by id')).rows[0];
+ const sql='select public.ops_update($1,$2,$3)';
+ const args=[r.id,r.version,JSON.stringify({customer:'Testkontakt',phone:'0123 45',phone2:''})];
+ await expect(as(992,sql,args)).rejects.toThrow('Feld nicht freigegeben');
+ await as(1,sql,args);
+ await expect(as(1,sql,args)).rejects.toThrow('Zwischenzeitlich');
+ const after=(await as(992,'select payload from public.ops_records where id=$1',[r.id])).rows[0].payload;
+ expect(after).toMatchObject({customer:'Testkontakt',phone:'0123 45',phone2:''});
+ expect(after.overrides.status).toBe(r.payload.overrides.status);
+ const audit=(await as(1,'select before_data,after_data from public.ops_audits where record_id=$1 order by at desc limit 1',[r.id])).rows[0];
+ expect(audit.before_data.phone??null).toBe(r.payload.phone??null);
+ expect(audit.after_data.phone).toBe('0123 45');
+});
