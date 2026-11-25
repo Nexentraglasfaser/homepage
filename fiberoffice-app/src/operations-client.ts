@@ -57,3 +57,24 @@ export async function operationApi(path:string,options?:RequestInit):Promise<any
  if(path.startsWith('file?')){const id=new URLSearchParams(path.split('?')[1]).get('id');const f=await c.from('ops_files').select('path').eq('id',id).single();if(f.error)throw f.error;const s=await c.storage.from('operations-files').createSignedUrl(f.data.path,60,{download:true});if(s.error)throw s.error;return {url:s.data.signedUrl};}
  throw Error('Unbekannte Aktion');
 }
+
+
+// Read only the selected addresses. Postgres applies the current user's row policies
+// on every batch, including after a project permission has been removed.
+export async function readReportRecords(ids:string[]):Promise<import('./operations-model').OperationRecord[]>{
+ const selected=[...new Set(ids)];
+ if(!selected.length)return [];
+ if(isLocal()){
+  const snapshot=await operationApi('operations');
+  const wanted=new Set(selected);
+  return snapshot.records.filter((r:import('./operations-model').OperationRecord)=>wanted.has(r.id));
+ }
+ const client=await operationsClient();
+ const records:import('./operations-model').OperationRecord[]=[];
+ for(let offset=0;offset<selected.length;offset+=40){
+  const {data,error}=await client.from('ops_records').select('payload,version').in('id',selected.slice(offset,offset+40));
+  if(error)throw Error(error.code==='57014'?'Die Datenbank hat die Abfrage abgebrochen. Bitte den Export erneut öffnen.':error.message);
+  for(const row of data)records.push({...row.payload,version:row.version});
+ }
+ return records;
+}
