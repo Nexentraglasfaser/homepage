@@ -30,22 +30,51 @@ export async function exportOperations(rows:OperationRecord[],data:OperationsDat
 }
 
 export async function makeAppointmentPdf(records:OperationRecord[]){
- const {jsPDF}=await import('jspdf');const pdf=new jsPDF();let y=18;
- const line=(text:string,size=10,bold=false)=>{pdf.setFont('helvetica',bold?'bold':'normal');pdf.setFontSize(size);for(const l of pdf.splitTextToSize(text,178)){if(y>278){pdf.addPage();y=18;}pdf.text(l,16,y);y+=size*.48;}y+=2;};
- line('NEXENTRA | Terminliste',17,true);
- line(`${records.length} Termine · Nach Datum und Uhrzeit sortiert`,9);
- let day='';
- for(const r of [...records].sort(compareAppointments)){
-  const d=appointmentDate(r),label=d?new Date(d+'T12:00').toLocaleDateString('de-DE',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'}):'Datum offen';
-  if(y>235){pdf.addPage();y=18;day='';}
-  if(day!==label){line(label,12,true);day=label;}
-  line(`${appointmentTimeLabel(r)} | ${r.street} ${r.number}`,12,true);
-  line([r.project,r.reference&&'ID: '+r.reference].filter(Boolean).join(' · '));
-  line([r.customer,[r.phone,r.phone2].filter(Boolean).join(' / ')].filter(Boolean).join(' · ')||'Kontakt nicht hinterlegt');
-  line([r.nvt&&'NVT: '+r.nvt,r.pipe&&'Rohr: '+r.pipe,r.units&&r.units+' WE',r.ne4&&'NE4: '+r.ne4].filter(Boolean).join(' · '));
-  const notes=appointmentNotes(r.overrides.appointment??r.appointment);if(notes)line('Termin / Zugang: '+notes);
-  if(recordNote(r))line('Bemerkung: '+recordNote(r));y+=5;
+ const {jsPDF}=await import('jspdf');
+ const pdf=new jsPDF(), ordered=[...records].sort(compareAppointments);
+ const projects=[...new Set(records.map(r=>r.project))];
+ const appendix:{title:string;lines:string[]}[]=[];
+ const font=(size:number,bold=false,color='#263748')=>{pdf.setFont('helvetica',bold?'bold':'normal');pdf.setFontSize(size);pdf.setTextColor(color);};
+ const wrap=(text:string,width:number)=>pdf.splitTextToSize(text.replaceAll('→',' > '),width) as string[];
+ const brand=()=>{font(7,true,'#53677B');pdf.text('NEXENTRA  |  MONTAGE',190,10,{align:'right'});};
+ let y=27;
+ const next=()=>{pdf.addPage();brand();y=23;};
+ brand();font(18,true,'#154E86');
+ for(const l of wrap('Tagesliste'+(projects.length===1?' - '+projects[0]:''),170)){pdf.text(l,20,y);y+=8;}
+ font(10,true,'#52687C');pdf.text('Montageeinsätze',20,y);y+=6;
+ const stats=[[String(records.length),'Termine'],[String(projects.length),'Projekte']];
+ stats.forEach(([value,label],i)=>{const x=28.5+76.5*i;pdf.setFillColor('#EAF2F8');pdf.setDrawColor('#B2C2D4');pdf.rect(x,y,76.5,12,'FD');font(10,true,'#154E86');pdf.text(value,x+38.25,y+5.3,{align:'center'});font(7);pdf.text(label,x+38.25,y+9.5,{align:'center'});});
+ y+=20;
+ let previous='';
+ for(const r of ordered){
+  const date=appointmentDate(r),day=date?new Date(date+'T12:00').toLocaleDateString('de-DE',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'}):'Datum offen';
+  const title=appointmentTimeLabel(r)+' | '+r.street+' '+r.number;
+  const access=appointmentNotes(r.overrides.appointment??r.appointment);
+  const note=recordNote(r)||'';
+  const current=note.split(/\b(?:Bisheriger Verlauf|Bisheriger Vermerk|Historie):/i)[0].trim();
+  const location=note.match(/(?:NVT|MVT|GVS)[ -]Standort:\s*([^\n;]+)/i)?.[0].split(/\s+Quelle:/i)[0];
+  const tech=[r.nvt&&'NVT: '+r.nvt,(r.overrides.actualPipe||r.pipe)&&'Rohr: '+(r.overrides.actualPipe||r.pipe),(r.overrides.actualUnits||r.units)&&(r.overrides.actualUnits||r.units)+' WE',r.ne4&&'NE4: '+r.ne4].filter(Boolean).join(' | ');
+  font(9);
+  const details=[projects.length>1?r.project:'',r.reference&&'ID '+r.reference,[r.postcode,r.city].filter(Boolean).join(' ')].filter(Boolean).join(' | ');
+  const info=[details,[r.customer,r.phone,r.phone2].filter(Boolean).join(' | ')||'Kontakt nicht hinterlegt',tech,location].filter(Boolean).flatMap(t=>wrap(t!,147));
+  const extra=[access&&'Termin / Zugang: '+access,current&&'Bemerkung: '+current].filter(Boolean).flatMap(t=>wrap(t,147));
+  const long=extra.length>5||note!==current;
+  if(long)appendix.push({title:r.street+' '+r.number+' | '+day,lines:[access&&'Termin / Zugang: '+access,note&&'Bemerkung: '+note].filter(Boolean).flatMap(t=>wrap(t,165))});
+  const body=[...info,...extra.slice(0,5),...(long?['Vollständige Hinweise im Anhang ('+appendix.length+').']:[])];
+  font(11,true);const heading=wrap(title,147);
+  if(y+(heading.length+body.length)*4.4+13>278){next();previous='';}
+  if(day!==previous){font(10,true,'#154E86');pdf.text(day,20,y);y+=4;previous=day;}
+  const lines=[...heading.map(text=>({text,bold:true})),...body.map(text=>({text,bold:false}))];
+  while(lines.length){
+   if(y>263)next();
+   const block=lines.splice(0,Math.floor((278-y-6)/4.4));
+   const h=block.length*4.4+6;
+   pdf.setFillColor('#F5F8FB');pdf.setDrawColor('#AFBFD2');pdf.rect(28.5,y,153,h,'FD');pdf.setFillColor('#154E86');pdf.rect(28.5,y,1,h,'F');
+   block.forEach(({text,bold},i)=>{font(bold?11:9,bold,bold?'#154E86':'#263748');pdf.text(text,31,y+5.6+i*4.4);});y+=h+4;
+  }
  }
- for(let p=1;p<=pdf.getNumberOfPages();p++){pdf.setPage(p);pdf.setFontSize(8);pdf.text(`NEXENTRA · Terminliste · ${p} / ${pdf.getNumberOfPages()}`,16,290);}
+ if(appendix.length){next();font(14,true,'#154E86');pdf.text('Anhang - vollständige Hinweise',20,y);y+=9;}
+ appendix.forEach(({title,lines},i)=>{if(y>255)next();font(10,true,'#154E86');for(const l of wrap((i+1)+'. '+title,165)){pdf.text(l,20,y);y+=5;}for(const l of lines){if(y>276)next();font(9);pdf.text(l,20,y);y+=4.4;}y+=5;});
+ for(let p=1;p<=pdf.getNumberOfPages();p++){pdf.setPage(p);font(7,false,'#52687C');pdf.text('NEXENTRA | Tagesliste',20,288);pdf.text('Seite '+p+' / '+pdf.getNumberOfPages(),190,288,{align:'right'});}
  return pdf;
 }
