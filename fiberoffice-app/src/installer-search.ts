@@ -1,4 +1,4 @@
-import {isScheduled, type OperationRecord} from './operations-model';
+import {appointmentDate,isScheduled, type OperationRecord} from './operations-model';
 import {overviewStatus} from './operations-overview';
 import {matchesOperationSearch} from './operations-search';
 
@@ -18,4 +18,10 @@ export function matchesInstallerFilters(record: OperationRecord, project: string
   default: match = status === filter;
  }
  return match && matchesOperationSearch(record, query);
+}
+
+export function spontaneousJobs(records:OperationRecord[], project:string) {
+ if (!project) return [];
+ return records.filter(r => matchesInstallerFilters(r,project,'Offen · ohne Termin','') && !appointmentDate(r))
+  .sort((a,b)=>(a.street+' '+a.number).localeCompare(b.street+' '+b.number,'de',{numeric:true}));
 }

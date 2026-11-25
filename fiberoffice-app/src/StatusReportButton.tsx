@@ -13,6 +13,6 @@ export function StatusReportButton({records,date,disabled=false}:{records:()=>Op
  }
  async function share(){if(!file)return;try{await navigator.share({files:[file],title:file.name});}catch(e){if(!(e instanceof Error&&e.name==='AbortError'))setError('Teilen fehlgeschlagen. Bitte die PDF speichern und als Anhang senden.');}}
  return <section><button className="primary" type="button" disabled={disabled||busy} onClick={()=>void generate()}>{busy?'PDF wird erstellt …':'Statusmeldung für Auftraggeber'}</button>
- {file&&url&&!disabled&&<div><small>{file.name}</small><p><a href={url} download={file.name}>PDF speichern</a> {navigator.canShare?.({files:[file]})&&<button type="button" onClick={()=>void share()}>PDF teilen / senden</button>}</p></div>}
+ {file&&url&&!disabled&&<div><small>{file.name}</small><iframe title="Vorschau der Statusmeldung" src={url} style={{width:'100%',height:'55vh',border:0}}/><p><a href={url} target="_blank" rel="noopener noreferrer">Vorschau öffnen</a></p><p><a href={url} download={file.name}>PDF speichern</a> {navigator.canShare?.({files:[file]})&&<button type="button" onClick={()=>void share()}>PDF teilen / senden</button>}</p></div>}
  {error&&<p role="alert">{error}</p>}</section>;
 }

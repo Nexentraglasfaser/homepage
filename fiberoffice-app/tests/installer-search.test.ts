@@ -18,3 +18,11 @@ it('unterscheidet offene Termine, terminierte Fehlerstellen und erledigte Anschl
  expect(rows.filter(r=>matchesInstallerFilters(r,'','Fehlerstelle',''))).toEqual([rows[1]]);
  expect(rows.filter(r=>matchesInstallerFilters(r,'','Abgeschlossen',''))).toEqual([rows[2]]);
 });
+
+it('zeigt bei Spontanmontage nur offene Adressen ohne Termin oder hinterlegtes Datum im gewählten Projekt', async()=>{
+ const {spontaneousJobs}=await import('../src/installer-search');
+ const open=address('Offen');
+ const rows=[open,address('Terminiert'),{...open,date:'2026-11-26'},address('Fehlerstelle'),address('Fertiggestellt'),address('Offen','','Münster')];
+ expect(spontaneousJobs(rows,'Recklinghausen-Süd')).toEqual([open]);
+ expect(spontaneousJobs(rows,'')).toEqual([]);
+});
