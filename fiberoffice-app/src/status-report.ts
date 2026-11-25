@@ -12,7 +12,7 @@ export function createStatusReport(rows:OperationRecord[],date:string){
  if(!rows.length || rows.some(r=>r.project!==rows[0].project))throw Error('Bitte ein Projekt mit Einsätzen auswählen.');
  const pdf=new jsPDF({unit:'mm',format:'a4',compress:true});
  const when=new Date(date+'T12:00:00'),short=when.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'});
- const project=rows[0].project,done=rows.filter(r=>classify(r).status==='Fertiggestellt'),other=rows.filter(r=>classify(r).status!=='Fertiggestellt');
+ const project=rows[0].project,done=rows.filter(r=>classify(r).status==='Fertiggestellt'),faults=rows.filter(r=>classify(r).status==='Fehlerstelle');
  const we=(r:OperationRecord)=>r.overrides.actualUnits||r.units;
  const count=(list:OperationRecord[])=>list.length+' Adr.'+(list.length&&list.every(r=>/^\d+$/.test(we(r)))?' / '+list.reduce((n,r)=>n+Number(we(r)),0)+' WE':'');
  const font=(size:number,bold=false,color='#253647')=>{pdf.setFont('helvetica',bold?'bold':'normal');pdf.setFontSize(size);pdf.setTextColor(color);};
@@ -22,10 +22,16 @@ export function createStatusReport(rows:OperationRecord[],date:string){
  font(18,true,'#154E86');
  for(const line of pdf.splitTextToSize('Statusmeldung - '+project,170)){pdf.text(line,20,y);y+=8;}
  font(10,true,'#52687C');pdf.text('Montagearbeiten | '+when.toLocaleDateString('de-DE',{weekday:'long'})+', '+short,20,y);y+=6;
- font(8);pdf.text('Einsatzart: Hausanschlussmontage',20,y);y+=4;pdf.text('Abrechnung: keine Angabe',20,y);y+=8;
- const tiles=[[String(rows.length),'Adresspositionen'],[count(done),'erledigt'],[count(other),'übrige Positionen'],['k. A.','Mehraufwand']];
- tiles.forEach(([value,label],i)=>{const x=28.5+i*38;pdf.setFillColor('#EAF2F8');pdf.setDrawColor('#B2C2D4');pdf.setLineWidth(.2);pdf.rect(x,y,38,12,'FD');font(10,true,'#154E86');pdf.text(value,x+19,y+5.4,{align:'center'});font(7,false,'#54687B');pdf.text(label,x+19,y+9.5,{align:'center'});});
- y+=19;font(8);pdf.text('Tagesgrundlage: Dokumentierter Arbeitsstand der aufgeführten Einsätze.',20,y);y+=5;
+ font(8);pdf.text('Einsatzart: Hausanschlussmontage',20,y);y+=4;y+=5;
+ const tiles=[[String(rows.length),'Adresspositionen'],[count(done),'erledigt'],[faults.length+' '+(faults.length===1?'Adresse':'Adressen'),'Fehlerstellen']];
+ for(const status of new Set(rows.map(r=>reportState(r).label))){
+  if(status==='Fertiggestellt'||status==='Fehlerstelle')continue;
+  const n=rows.filter(r=>reportState(r).label===status).length;
+  tiles.push([n+' '+(n===1?'Adresse':'Adressen'),status]);
+ }
+ const columns=Math.min(tiles.length,3),width=153/columns;
+ tiles.forEach(([value,label],i)=>{const x=28.5+(i%columns)*width,top=y+Math.floor(i/columns)*12;pdf.setFillColor('#EAF2F8');pdf.setDrawColor('#B2C2D4');pdf.setLineWidth(.2);pdf.rect(x,top,width,12,'FD');font(10,true,'#154E86');pdf.text(value,x+width/2,top+5.4,{align:'center'});font(7,false,'#54687B');pdf.text(label,x+width/2,top+9.5,{align:'center'});});
+ y+=12*Math.ceil(tiles.length/columns)+7;font(8);pdf.text('Tagesgrundlage: Dokumentierter Arbeitsstand der aufgeführten Einsätze.',20,y);y+=5;
  const nextPage=()=>{pdf.addPage();pageHeader();y=20;};
  for(const r of rows){
   const state=reportState(r),c=cableValues(r.overrides),length=blownLength(c.meterStart,c.meterEnd);

@@ -20,3 +20,8 @@ it('gibt nur die berechnete Strecke in der fertigen PDF aus',()=>{
  expect(page).toContain('Eingeblasene Strecke: 200 m');
  expect(page).not.toMatch(/6000 m|5800 m|Kabelzähler/);
 });
+it('zählt nur tatsächliche Fehlerstellen und trennt Teilleistungen',()=>{
+ const {pdf}=createStatusReport([row('Fertiggestellt'),row('Fehlerstelle'),row('Teilleistung')],'2026-11-25');
+ const page=(pdf.internal as typeof pdf.internal & {pages:string[][]}).pages[1].join('\n');
+ expect(page).toContain('(Fehlerstellen)');expect(page).toContain('(1 Adresse)');expect(page).toContain('(Teilweise abgeschlossen)');expect(page).not.toContain('Mehraufwand');
+});
