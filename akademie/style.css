@@ -12,3 +12,13 @@
 .z-question-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}.z-question-grid button{padding:8px 2px;font-size:12px;min-width:0}.z-flash{max-width:800px;margin:auto;min-height:260px}.source-links{overflow-wrap:anywhere}.z-flash .example{margin-top:20px}#z-calculator .filter-row>label{display:flex;align-items:center;gap:8px}#z-calc-result p{overflow-wrap:anywhere}#desktop-nav .nav-item{min-height:42px}
 
 #z-mode-inputs input[type="checkbox"]{width:auto;flex:0 0 auto;margin:0}#z-mode-inputs>label{font-weight:500}
+
+.course-figure{margin:24px 0;padding:16px 0;border-top:1px solid var(--line)}
+.course-figure h3{margin:0 0 12px}.course-figure details{margin:12px 0}.course-figure summary{cursor:pointer;color:var(--ink);font-weight:650}
+.figure-open{display:block;width:100%;background:white;color:var(--blue);border:1px solid var(--line);border-radius:12px;padding:10px;cursor:zoom-in;text-align:left}
+.figure-open:hover{background:var(--soft);color:var(--ink)}.figure-open img{display:block;max-width:100%;max-height:420px;margin:0 auto;object-fit:contain}
+.figure-open span{display:block;font-size:.85rem;margin-top:8px}.figure-dialog{box-sizing:border-box;width:min(96vw,1500px);max-width:96vw;max-height:92dvh;padding:18px}
+.figure-pan{overflow:auto;background:white;max-height:70dvh}.figure-pan img{display:block;max-width:none;height:auto}
+.gbgs-form label{display:block;margin:16px 0 6px}.gbgs-form input,.gbgs-form select{width:100%;max-width:40rem}
+.gbgs-form [aria-invalid=true]{border-color:var(--red)}.gbgs-form .field-hint{color:var(--red);font-size:.92rem;margin:6px 0}
+.gbgs-form [hidden]{display:none}.gbgs-step{margin:14px 0}.gbgs-history{padding-left:1.35rem}.gbgs-history li{margin-bottom:10px}
