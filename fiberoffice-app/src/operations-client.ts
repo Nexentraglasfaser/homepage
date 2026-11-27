@@ -37,6 +37,7 @@ export async function operationApi(path:string,options?:RequestInit):Promise<any
  if(path==='users/disabled')return rpc('ops_set_user_disabled',{p_email:input.email,p_disabled:input.disabled});
  if(path==='users/create'||path==='users/password'){const {data,error}=await c.functions.invoke(path==='users/create'?'create-workspace-user':'reset-workspace-password',{body:input});if(error){let message='Benutzer konnte nicht angelegt werden.';try{message=(await error.context.json()).error||message;}catch{}throw Error(message);}return data;}
  if(path==='appointment-days')return rpc('website_appointment_days');
+ if(path==='appointment-days/range')return rpc('ops_set_appointment_range',{p_project:input.project,p_start:input.date,p_end:input.end,p_windows:input.windows});
  if(path==='appointment-days/set')return rpc('ops_set_appointment_day',{p_project:input.project,p_day:input.date,p_windows:input.windows});
  if(path==='me')return rpc('ops_me');
  if(path==='projects/create')return rpc('ops_create_project',{p_id:input.id,p_name:input.name,p_city:input.city,p_client:input.client,p_code:input.code,p_note:input.note});

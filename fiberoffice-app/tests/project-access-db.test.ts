@@ -223,3 +223,16 @@ it('only admins release website dates and withdrawal removes the public offer', 
  await as(1,sql,[project,args[1],[]]);
  expect((await db.query('select * from public.website_appointment_days()')).rows).toEqual([]);
 });
+
+it('releases inclusive date ranges and withdraws individual days independently', async () => {
+ await db.exec(readFileSync(new URL('../supabase/migrations/202611270001_appointment_range.sql', import.meta.url), 'utf8'));
+ const sql = 'select public.ops_set_appointment_range($1,$2,$3,$4)';
+ const release = [project,'2099-12-30','2100-01-01',['Vormittags']];
+ await expect(as(2,sql,release)).rejects.toThrow();
+ await expect(as(1,sql,[project,release[2],release[1],release[3]])).rejects.toThrow();
+ await as(1,sql,release);
+ const days = async () => (await db.query('select day::text from public.website_appointment_days() order by day')).rows;
+ expect(await days()).toEqual([{day:'2099-12-30'},{day:'2099-12-31'},{day:'2100-01-01'}]);
+ await as(1,sql,[project,'2099-12-31','2099-12-31',[]]);
+ expect(await days()).toEqual([{day:'2099-12-30'},{day:'2100-01-01'}]);
+});
