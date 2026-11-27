@@ -1,0 +1,16 @@
+/* Academy entry: maintain readable navigation with both independent logins. */
+.main-nav .nav-academy { border-color: #76a7ff; color: #b6d0ff; }
+.main-nav .nav-academy:hover { background: rgba(36,99,212,.18); }
+@media (min-width: 1181px) and (max-width: 1380px) {
+  .site-header, .site-header.scrolled { height: 78px; background: rgba(7,19,35,.96); }
+  .menu-toggle { display: block; }
+  .fiber-office-navigation .main-nav { position: fixed; inset: 78px 0 auto; display: grid; gap: 0; padding: 16px 20px 24px; background: rgba(7,19,35,.985); transform: translateY(-130%); opacity: 0; pointer-events: none; transition: .25s; max-height: calc(100dvh - 78px); overflow-y: auto; }
+  .fiber-office-navigation .main-nav.open { transform: none; opacity: 1; pointer-events: auto; }
+  .main-nav a { padding: 14px 10px; border-bottom: 1px solid rgba(255,255,255,.1); }
+  .main-nav .nav-cta { margin-top: 10px; border: 0; text-align: center; }
+  .main-nav .nav-portal { margin-top: 12px; padding: 13px; }
+}
+@media (min-width: 1381px) {
+  .fiber-office-navigation .brand, .fiber-office-navigation.scrolled .brand { width: 190px; }
+  .fiber-office-navigation .main-nav { gap: 12px; }
+}
