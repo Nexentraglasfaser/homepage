@@ -206,3 +206,20 @@ it('verwaltet persönliche Monteure nur als zuständiger Admin und behält den V
  expect((await db.query('select * from public.ops_audits where actor=$1',[target])).rows.length).toBeGreaterThan(0);
  expect((await db.query('select email from auth.users where id=$1',[id(992)])).rows[0]).toEqual({email:null});
 });
+
+it('only admins release website dates and withdrawal removes the public offer', async () => {
+ await db.exec(readFileSync(new URL('../supabase/migrations/202611260001_appointment_days.sql', import.meta.url), 'utf8'));
+ await db.query("insert into private.website_calendar_owner values ('nexentra.de',$1)", [id(10)]);
+ const sql = 'select public.ops_set_appointment_day($1,$2,$3)';
+ const args = [project,'2099-01-12',['Vormittags']];
+ await expect(as(2,sql,args)).rejects.toThrow();
+ await as(1,sql,args);
+ await db.exec('set role anon');
+ try {
+  const {rows} = await db.query('select project, city, day::text, windows from public.website_appointment_days()');
+  expect(rows).toEqual([{project:'Duraku',city:'Testort',day:'2099-01-12',windows:['Vormittags']}]);
+  await expect(db.query(sql,args)).rejects.toThrow();
+ } finally { await db.exec('reset role'); }
+ await as(1,sql,[project,args[1],[]]);
+ expect((await db.query('select * from public.website_appointment_days()')).rows).toEqual([]);
+});

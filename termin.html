@@ -256,6 +256,7 @@
             <input id="csid" name="csid" autocomplete="off">
           </div>
           <div>
+            <div id="projektwahl" hidden><label for="anfrageprojekt">Ausbauprojekt *</label><select id="anfrageprojekt"></select></div>
             <label for="wunschtag">Gewünschter Tag *</label>
             <select id="wunschtag" name="wunschtag" required disabled>
               <option value="">Bitte zuerst den Ort eingeben</option>
@@ -331,20 +332,19 @@
     const alternativeWindow = document.querySelector('#alternativzeitraum');
     const submitButton = form.querySelector('button[type="submit"]');
 
-    // Freigabe 22.11.2026: Recklinghausen vom 24. bis 27. November.
-    // Unverbindliche Anfragen; konkrete Zeiten und Zugang werden anschließend bestätigt.
-    const recklinghausenDates = {
-    };
-    const appointmentAvailability = {
-      recklinghausen: recklinghausenDates,
-      'recklinghausen-sud': recklinghausenDates,
-      'recklinghausen sud': recklinghausenDates
-    };
-    const cityLabels = {
-      recklinghausen: 'Recklinghausen',
-      'recklinghausen-sud': 'Recklinghausen-Süd',
-      'recklinghausen sud': 'Recklinghausen-Süd'
-    };
+    let calendar = [], loadFailed = false;
+    const projectField = document.querySelector('#anfrageprojekt');
+    let selectedDays = [];
+    async function loadCalendar(){
+      const cfg=await fetch('/fiberoffice/config.json',{cache:'no-store'});
+      if(!cfg.ok)throw Error('Konfiguration nicht erreichbar');
+      const {supabaseUrl,supabaseKey}=await cfg.json();
+      const response=await fetch(supabaseUrl+'/rest/v1/rpc/website_appointment_days',{method:'POST',headers:{apikey:supabaseKey,'Content-Type':'application/json'},body:'{}',cache:'no-store'});
+      if(!response.ok)throw Error('Kalender nicht erreichbar');
+      const rows=await response.json();
+      if(!Array.isArray(rows))throw Error('Kalender nicht lesbar');
+      return rows;
+    }
     const windowLabels = {
       Vormittags: 'Vormittags (07:30–12:30 Uhr)',
       Mittags: 'Früher Nachmittag (13–14 Uhr)',
@@ -367,7 +367,7 @@
       day: '2-digit',
       month: '2-digit',
       year: 'numeric'
-    }).format(new Date(`${date}T12:00:00`)) + ` – ${cityLabels[normalizeCity(cityInput.value)] || cityInput.value.trim()}`;
+    }).format(new Date(`${date}T12:00:00`)) + ` – ${projectField.value || cityInput.value.trim()}`;
 
     const fillDateSelect = (select, dates, firstLabel) => {
       select.replaceChildren(new Option(firstLabel, ''));
@@ -376,7 +376,7 @@
     };
 
     const availableWindows = (date) =>
-      appointmentAvailability[normalizeCity(cityInput.value)]?.[date] || [];
+      selectedDays.find(r=>r.day===date)?.windows || [];
 
     const updateAvailableWindows = () => {
       const windows = availableWindows(desiredDate.value);
@@ -411,10 +411,18 @@
 
     const updateAvailableDates = () => {
       const enteredCity = cityInput.value.trim();
-      const dates = Object.keys(appointmentAvailability[normalizeCity(enteredCity)] || {});
+      const city=normalizeCity(enteredCity);
+      const matching=calendar.filter(r=>[r.city,r.project].some(v=>normalizeCity(v).replace(/[- ]+/g,' ')===city.replace(/[- ]+/g,' ')));
+      const names=[...new Set(matching.map(r=>r.project))],previous=projectField.value;
+      projectField.replaceChildren(new Option('Projekt wählen',''),...names.map(n=>new Option(n,n)));
+      projectField.value=names.length===1?names[0]:names.includes(previous)?previous:'';
+      document.querySelector('#projektwahl').hidden=names.length<2;
+      selectedDays=matching.filter(r=>r.project===projectField.value);
+      const dates=selectedDays.map(r=>r.day).sort();
 
       fillDateSelect(desiredDate, dates, dates.length ? 'Bitte einen Tag auswählen' : 'Keine Termine verfügbar');
       fillDateSelect(alternativeDate, dates, 'Kein Alternativtag');
+      if(dates.length)desiredDate.value=dates[0];
       updateAvailableWindows();
 
       availabilityMessage.classList.remove('available', 'unavailable');
@@ -423,10 +431,13 @@
         return;
       }
 
+      if(loadFailed){availabilityMessage.textContent='Die Terminfreigaben konnten nicht geladen werden. Bitte laden Sie die Seite erneut.';return;}
+      if(names.length>1&&!projectField.value){availabilityMessage.textContent='Bitte wählen Sie Ihr Ausbauprojekt.';return;}
       if (dates.length) {
         availabilityMessage.textContent = dates.length === 1
           ? `Für ${enteredCity} ist aktuell 1 Tag freigegeben.`
           : `Für ${enteredCity} sind aktuell ${dates.length} Tage freigegeben.`;
+        availabilityMessage.textContent+=' Vorschlag: '+formatDate(dates[0])+'.';
         availabilityMessage.classList.add('available');
       } else {
         availabilityMessage.textContent = `Für ${enteredCity} sind aktuell keine Termine freigegeben.`;
@@ -434,6 +445,8 @@
       }
     };
 
+    projectField.addEventListener('change',updateAvailableDates);
+    loadCalendar().then(rows=>{calendar=rows;updateAvailableDates();}).catch(()=>{loadFailed=true;updateAvailableDates();});
     cityInput.addEventListener('input', updateAvailableDates);
     cityInput.addEventListener('change', updateAvailableDates);
     desiredDate.addEventListener('change', updateAvailableWindows);
@@ -442,7 +455,14 @@
 
     const value = (selector) => document.querySelector(selector)?.value.trim() || '–';
 
-    form.addEventListener('submit', (event) => {
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (form.dataset.sending) return;
+      form.dataset.sending='1';submitButton.disabled=true;
+      try{calendar=await loadCalendar();loadFailed=false;}catch{loadFailed=true;calendar=[];}
+      const project=projectField.value;
+      selectedDays=calendar.filter(r=>r.project===project);
+
       const selectedWindow = form.querySelector('input[name="zeitraum"]:checked')?.value || '–';
       const validDesiredWindow = availableWindows(desiredDate.value).includes(selectedWindow);
       const alternativeWindows = availableWindows(alternativeDate.value);
@@ -452,8 +472,8 @@
         : !alternativeWindow.value;
 
       if (!validDesiredWindow || !validAlternative) {
-        event.preventDefault();
-        updateAvailableWindows();
+        delete form.dataset.sending;
+        updateAvailableDates();
         windowMessage.textContent = 'Bitte wählen Sie einen freigegebenen Tag und Zeitraum aus.';
         desiredDate.focus();
         return;
@@ -478,6 +498,7 @@
       ];
 
       document.querySelector('[data-message]').value = lines.join('\n');
+      if(form.reportValidity())HTMLFormElement.prototype.submit.call(form);else {delete form.dataset.sending;updateAvailableWindows();}
     });
   </script>
 </body>
