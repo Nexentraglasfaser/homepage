@@ -1,4 +1,4 @@
-const CACHE='nexentra-academy-login-2026-11-27-1';
+const CACHE='nexentra-academy-login-2026-11-27-2';
 const FILES=['./','./index.html','./login.js','./login.css','./style.css','./manifest.webmanifest','./icon.svg','./icon-192.png','./icon-512.png'];
 const urls=FILES.map(path=>new URL(path,self.registration.scope).href);
 self.addEventListener('install',event=>event.waitUntil((async()=>{const cache=await caches.open(CACHE);for(const url of urls){const response=await fetch(url,{cache:'reload'});if(!response.ok||response.redirected)throw Error('Login noch nicht verfügbar');await cache.put(url,response);}await self.skipWaiting();})()));
