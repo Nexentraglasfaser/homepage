@@ -3,3 +3,7 @@
 #toast{pointer-events:none}
 
 .explanation-item{padding:12px 0;border-bottom:1px solid var(--line,#dce4ef)}.explanation-item:last-child{border:0}.explanation-item p{margin:0 0 7px}.answer-explanations{font-size:14px;line-height:1.65}.filter-row>div{min-width:0}.filter-row select{max-width:100%}
+
+.course-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.course-card{display:flex;flex-direction:column;gap:12px}.course-card .course-top{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:18px}.course-card .round-icon{margin-bottom:4px}.course-card h2{font-size:24px}.course-card .button{margin-top:auto}.course-portal .bottom-nav{grid-template-columns:1fr}.course-portal .sidebar-bottom>a{display:none}@media(max-width:1200px){.course-grid{grid-template-columns:1fr}}
+
+.sidebar{overflow-y:auto}.course-card .course-top{min-height:56px}
