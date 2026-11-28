@@ -1,4 +1,4 @@
-const CACHE='nexentra-academy-login-2026-11-28-2';
+const CACHE='nexentra-academy-login-2026-11-28-3';
 const scope=new URL(self.registration.scope);
 const index=new URL('index.html',scope);
 const files=['index.html','login.js','login.css','style.css','manifest.webmanifest','icon.svg','icon-192.png','icon-512.png'];
